@@ -14,6 +14,11 @@ The system should consist of the following modules:
 
 Since this is a prototype system, not all modules will be fully developed, and it is acceptable for only some functionalities to be implemented.
 
+In addition, the following infrastructure features were implemented:
+
+- **CI/CD Pipelines:** Automated pipelines were developed for building, testing, and deploying the system components.
+- **Database Backups:** Scripts were created on a Linux server to perform **daily backups** of the system’s databases.
+
 ## 🛠️ Technologies Used
 
 - **Master Data Devices & User Management:** Node.js  
