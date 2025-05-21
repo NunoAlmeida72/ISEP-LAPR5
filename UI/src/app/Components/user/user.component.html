@@ -1,0 +1,14 @@
+
+<div class="user-profile">
+  <h1 class="center-button">{{ user.firstName }} {{ user.lastName }}</h1>
+  <br>
+  <p>Email: {{ user.email }}</p>
+  <p>Phone: {{ user.phoneNumber }}</p>
+  <p *ngIf="user.nif!=undefined">NIF: {{ user.nif }}</p>
+  <br>
+  <div class="center-button">
+    <button mat-button (click)="userGetData()">Your Profile</button>
+    <button mat-button (click)="editUser()">Edit Account</button>|
+    <button mat-button (click)="deleteUser()" style="color: red;">Delete Account</button>
+  </div>
+</div>

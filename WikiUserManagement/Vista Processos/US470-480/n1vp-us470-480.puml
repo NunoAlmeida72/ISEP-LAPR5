@@ -1,0 +1,15 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant TaskManager as TM
+participant System as sys
+
+activate TM
+ TM -> sys: list-accept-or-refuse-requests
+  activate sys
+  sys --> TM: Task Request approved/refused
+  deactivate sys
+@enduml

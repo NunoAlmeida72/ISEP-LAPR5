@@ -1,0 +1,62 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant FloorRoute as route
+participant FloorController as controller
+participant FloorService as service
+participant BuildingRepo as repoBuilding
+participant BuildingMap as mapBuilding
+participant ElevatorRepo as repoElevator
+participant ElevatorMap as mapElevator
+participant FloorRepo as repoFloor
+participant FloorMap as mapFloor
+
+-> route: GET /floors/buildings/elevator/:id (json)
+activate route
+ route -> controller: listFloorsWithElevator(buildingId)
+ activate controller
+  controller -> service: listFloorsWithElevator(buildingId)
+  activate service
+   service -> repoBuilding: findByDomainId(buildingId)
+   activate repoBuilding
+   repoBuilding -> : findOne(buildingId)
+    repoBuilding -> mapBuilding: Map2Model(buildingData)
+    activate mapBuilding
+     mapBuilding --> repoBuilding: building
+     deactivate
+    repoBuilding --> service: building
+    deactivate
+   service -> repoElevator: findByBuildingId(buildingId)
+   activate repoElevator
+   repoElevator -> : find(buildingId)
+    repoElevator -> mapElevator: Map2Model(elevatorData)
+    activate mapElevator
+     mapElevator --> repoElevator: elevator
+     deactivate
+    repoElevator --> service: elevator
+    deactivate
+   loop (for each floorId)
+    service -> repoFloor: findByDomainId(floorsIds)
+    activate repoFloor
+    repoFloor -> : FindOne(floorId)
+     repoFloor -> mapFloor: Map2Model(floorData)
+     activate mapFloor
+      mapFloor --> repoFloor: floor
+      deactivate
+     repoFloor --> service: floor
+     deactivate
+    service -> mapFloor: Map2DTO(floor)
+    activate mapFloor
+     mapFloor --> service: floorDTO
+    end loop
+     deactivate
+    service --> controller: FloorsDTOlist
+    deactivate
+   controller --> route: response(FloorsDTOlist as json)
+   deactivate
+  <-- route: response
+  deactivate
+@enduml

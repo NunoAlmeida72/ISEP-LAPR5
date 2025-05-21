@@ -1,0 +1,62 @@
+<div class="container">
+    <header>
+        <h1>System Info</h1>
+    </header>
+  
+    <div class="content">
+        <section class="left-section">
+            <h2>Minimum Business Continuity</h2>
+            <p>
+                O nosso produto final, trata-se de uma aplicação com vários módulos e componentes associados a robots e drones que se movimentam pelo Isep. Essencialmente os módulos são os seguintes: 
+            </p>
+            <p>    
+                - Campus Management Module; 
+            </p>
+            <p>    
+                - Fleet Management Module; 
+            </p>
+            <p>    
+                - Robot Integration Module (Robots can realize tasks such as delivery of objects, surveillance, etc); 
+            </p>
+            <p>    
+                we also realized that the scope of users would be mostly students and ISEP staff, 
+                Percebemos também que o escopo de utilizadores vai se tratar maioritariamente de estudantes e funcionários do Isep, assim que o valor que a aplicação oferece, advém das tarefas de entregas e videovigilância que estão disponíveis a quem estiver registado no sistema. 
+            </p>
+            <p> Accordingly, we consider the most critical function of the applicatrion to be the Robot Integration Module, which, ideally, must always be available. The disruption of this critical component during a long period could cause:                
+                De acordo com o contexto da aplicação, consideramos que função crítica a se preservar durante qualquer disrupção é o módulo de entregas realizadas pelos robots e as funções de videovigilância, que a nosso ver, deve estar sempre disponível. O não funcionamento desses componentes durante uma longa janela de tempo pode, a nosso ver: 
+            </p>
+            <p>    
+                - Put the robot's physical integrity at risk, since malfunctions in the pathfinding could expose it to damage from outside factors
+                - Pôr em risco o estado dos robots, visto que estão sujeitos a vandalismo ou até mesmo ao mal funcionamento na toma de trajetos durante uma entrega. 
+            </p>
+            <p>    
+                - Delay classes or other tasks, in cases where ISEP staff is dependent on a robot's delivery 
+                - Atrasar aulas ou outras tarefas de funcionários do Isep, caso estes estejam dependentes da entrega de certos materiais. 
+            </p>
+            <p>    
+                Create a poor reputation among users due to the malfunction in the most visible part of the application
+                - Gerar dúvidas aos utilizadores base da aplicação acerca do quão confiável é, quando a aplicação falha a cumprir as suas funcionalidades.
+            </p>
+            <p> taking all this into account, a consensus was reached, in which the application's most critical functions must not be allowed to fail for periods longer than a class. As such, we have defined the Maximum tolerale downtime to be 30 minutes
+                Tendo em conta o que foi abordado no ponto anterior, no qual se aborda a importância das funcionalidades do nosso sistema, chegamos a um consenso de que é inaceitável que as funcionalidades críticas da aplicação estejam indisponíveis durante a realização de uma aula inteira. Dito isto, e tendo em conta realisticamente o tempo necessário para o restauro de tais serviços definimos que o Maximum Tolerable Downtime é de 30 minutos.   
+            </p>
+            <p> 
+                As for the other, less critical modules of the application, associated with Building and Fleet management, 
+                Como as outras componentes da aplicação estão mais associadas com gestão de edifícios e gestão de frota, que são funcionalidades somente usadas pelos utilizadores com autorização para o fazer, que são em número muito menos reduzido, definimos que o Maximum Tolerable Period of Disruption é de 4 horas.
+            </p>
+        </section>
+  
+        <section class="right-section">
+            <h2>Data Backup Strategy</h2>
+            <p>
+                Numa estratégia de cópia, o RPO, ou seja, a diferença entre os dados em backup e no momento de falha de sistema, e o WRT, ou seja, o tempo necessário para os dados disponíveis no backup serem transferidos para o sistema e a sua integridade assegurada, podem ser diminuídos, respetivamente, através de backups frequentes e rápidos e através de um sistema que permita compilação rápida dos dados, nos casos em que estes estão dispersos por vários backups. 
+            </p>
+            <p>
+                Não sendo possível a estratégia de mirroring, devido ao acesso a uma única máquina, foi implementada a estratégia de cópia parcial diária, onde apenas a solução é copiada integralmente. Esta estratégia foi implementada de forma a minimizar o RPO, com backups diários de apenas um ficheiro e não da máquina inteira, e o WRT, pois uma cópia integral é mais rápida de repor em caso de necessidade. 
+            </p>
+            <p>
+                A estratégia implementada tem algumas desvantagens, nomeadamente, devido ao acesso a apenas uma máquina, os backups estão unicamente disponíveis na própria máquina, pelo que uma falha grave nesta facilmente leva à perda dos backups. A estratégia implementada também tem maior RPO quando comparada à cópia sequencial ou diferencial, devido ao processo de backup mais lento em relação a estas estratégias.              
+            </p>
+        </section>
+    </div>
+</div>

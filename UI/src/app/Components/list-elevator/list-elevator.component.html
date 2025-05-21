@@ -1,0 +1,44 @@
+<mat-horizontal-stepper [linear]="isLinear" #stepper>
+  <mat-step [stepControl]="firstFormGroup">
+  <form [formGroup]="firstFormGroup" >
+    <ng-template matStepLabel>Select one building</ng-template>
+    <mat-form-field>
+      <mat-select name="buildingId" formControlName="firstCtrl">
+        <mat-option *ngFor="let building of buildings" [value]="building.id">{{building.code}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div>
+      <button mat-button matStepperNext (click)="getElevators()">Next</button>
+    </div>
+  </form>
+  </mat-step>
+  <mat-step>
+    <mat-divider></mat-divider>
+      <ng-template matStepLabel>Elevators List</ng-template>
+      <table>
+        <tr>
+          <th>Floors</th>
+          <th>Code</th>
+          <th>Brand</th>
+          <th>Model</th>
+          <th>Serial Number</th>
+          <th>Description</th>
+        </tr>
+
+        <tr *ngFor="let elevator of elevators">
+          <td>{{ mapFloorIdsToNumbers(elevator.floorsIds) }}</td>
+          <td>{{ elevator.code }}</td>
+          <td>{{ elevator.brand }}</td>
+          <td>{{ elevator.model }}</td>
+          <td>{{ elevator.serialNumber }}</td>
+          <td>{{ elevator.description }}</td>
+        </tr>
+      </table>
+      <mat-divider></mat-divider>
+      <div>
+        <br>
+        <button mat-button (click)="stepper.reset();reset();">List elevators for other building</button>
+      </div>
+    </mat-step>
+    <ng-template #noElevators><br><mat-spinner [diameter]="30"></mat-spinner><br></ng-template>
+  </mat-horizontal-stepper>

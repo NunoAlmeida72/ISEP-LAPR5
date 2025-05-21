@@ -1,0 +1,79 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+participant BuildingConnectionRoute  as route
+participant BuildingConnectionController as controller
+participant BuildingConnectionService as service
+participant BuildingConnection as domain
+participant BuildingConnectionRepo as repo
+participant BuildingConnectionMap as mapper
+participant FloorRepo as repoFloor
+participant FloorMap as mapperFloor
+
+
+
+
+-> route: Put/Patch /buildingConnections / (json)
+activate route
+  route -> controller: updateBuildingConnection(json)
+  activate controller
+    controller -> service: updateBuildingConnection(json as IBuildingConnectionDTO)
+    activate service
+    service -> repo: findByDomainId(buildingConnectionDTO.id)
+    activate repo
+    repo -> : findOne(buildingConnectionDTO.id)
+    repo -> mapper: Map2Model(buildingConnection)
+    activate mapper
+    mapper --> repo: buildingConnection
+    deactivate
+    repo --> service: buildingConnection
+    deactivate
+    service -> repoFloor: findByDomainId(buildingConnectionDTO.floor1Id)
+    activate repoFloor
+    repoFloor -> : findOne(buildingConnectionDTO.floor1Id)
+    repoFloor -> mapperFloor: Map2Model(floor1Data)
+    activate mapperFloor
+    mapperFloor --> repoFloor: floor1
+    deactivate
+    repoFloor --> service: floor1
+    deactivate
+    service -> repoFloor: findByDomainId(buildingConnectionDTO.floor2Id)
+    activate repoFloor
+    repoFloor -> : findOne(buildingConnectionDTO.floor2Id)
+    repoFloor -> mapperFloor: Map2Model(floor2Data)
+    activate mapperFloor
+    mapperFloor --> repoFloor: floor2
+    deactivate
+    repoFloor --> service: floor2
+    deactivate
+    service -> domain**: setfloorId()
+    domain --> service: buildingConnection
+    service -> repo: save(buildingConnection)
+    activate  repo
+    repo -> mapper: Map2Data(buildingConnection)
+    activate mapper
+    mapper --> repo: buildingConnectionData
+    deactivate
+    repo -> : save(buildingConnectionData)
+    repo -> mapper: Map2Model(buildingConnection)
+    activate mapper
+    mapper --> repo: buildingConnection
+    deactivate
+    repo --> service: buildingConnection
+    deactivate
+    service -> mapper: Map2DTO(buildingConnection)
+    activate mapper
+    mapper --> service: buildingConnectionDTO
+    deactivate
+    service --> controller: buildingConnectionDTO
+    deactivate
+    controller --> route: response(buildingConnectionDTO as json)
+    deactivate
+    <-- route: response
+    deactivate
+
+@enduml

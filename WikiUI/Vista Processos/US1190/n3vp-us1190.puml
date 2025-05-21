@@ -1,0 +1,189 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant CampusManager as CP
+participant UI as UI
+
+participant BuildingRoute as BR
+participant BuildingController as BC
+participant BuildingService as BS
+participant BuildingMap as BM
+participant BuildingRepo as BRe
+
+participant FloorRoute as FR
+participant FloorController as FC
+participant FloorService as FS
+participant FloorMap as FM
+participant FloorRepo as FRe
+
+participant BuildingConnectionRoute as BCR
+participant BuildingConnectionController as BCC
+participant BuildingConnectionService as BCS
+participant BuildingConnection as BCD
+participant BuildingConnectionRepo as BCRe
+participant BuildingConnectionMap as BCM
+
+activate CP
+ CP -> UI: getBuildingConnections
+  activate UI
+   UI -> BR: GET /buildings
+   activate BR
+    BR -> BC: listBuildings()
+    activate BC
+     BC -> BS: listBuildings()
+     activate BS
+      BS -> BRe: findAll()
+      activate BRe
+       BRe -> :find()
+       loop (for each building)
+        BRe -> BM: map2Model(building)
+        activate BM
+         BM --> BRe: buildingModel
+        deactivate BM
+       end loop
+        BRe --> BS: buildingsModel
+        deactivate BRe
+      loop (for each buildingModel)
+       BS -> BM: map2DTO(buildingModel)
+       activate BM
+        BM --> BS: buildingDTO
+       deactivate BM
+      end loop
+      BS --> BC: buildingsDTO
+     deactivate BS
+     BC --> BR: response(buildingsDTO as json)
+    deactivate BC 
+    BR --> UI: buildings(json)
+   deactivate BR
+   UI --> CP: displays buildings and asks to choose two
+  deactivate UI
+ CP -> UI: chooses both buildings
+  activate UI
+   UI -> BCR: GET /buildingConnections/buildingId1/buildingId2
+   activate BCR
+  BCR -> BCC: listBuildingConnections(buildingId1, buildingId2)
+  activate BCC
+    BCC -> BCS: listBuildingConnections(buildingId1, buildingId2)
+    activate BCS
+    BCS -> BCRe: findAll()
+    activate BCRe
+    BCRe -> : find()
+    loop (for each buildingConnection)
+    BCRe -> BCM: Map2Model(buildingConnection)
+    activate BCM
+    BCM --> BCRe: buildingConnectionModel
+    deactivate
+    end loop
+    BCRe --> BCS: buildingConnectionsModel
+    deactivate
+    loop (for each buildingConnection)
+    BCS -> FRe: findByDomainId(buildingConnection.floor1Id)
+    activate FRe
+    FRe -> : findOne(buildingConnection.floor1Id)
+    FRe -> FM: Map2Model(floor1)
+    activate FM
+    FM --> FRe: floor1Model
+    deactivate
+    FRe --> BCS: floor1Model
+    deactivate
+    BCS -> FRe: findByDomainId(buildingConnectionDTO.floor2Id)
+    activate FRe
+    FRe -> : findOne(buildingConnection.floor2Id)
+    FRe -> FM: Map2Model(floor2)
+    activate FM
+    FM --> FRe: floor2Model
+    deactivate
+    FRe --> BCS: floor2Model
+    deactivate
+    BCS -> BCM: Map2DTO(buildingConnection)
+    activate BCM
+    BCM --> BCS: buildingConnectionDTO
+    deactivate
+    BCS -> BCS: buildingConnectionDTOList.push(buildingConnectionDTO)
+    end loop
+    BCS --> BCC: buildingConnectionsDTO
+    deactivate
+    BCC --> BCR: response(buildingConnectionsDTO as json)
+    deactivate
+    BCR --> UI: buildingConnections(json)
+   deactivate BCR
+   UI -> FR: GET /floors/buildingId1
+   activate FR
+  FR -> FC: listFloors(buildingId1)
+  activate FC
+    FC -> FS: listFloors(buildingId1)
+    activate FS
+    FS -> BRe: findByDomainId(buildingId1)
+    activate BRe
+    BRe -> BM: Map2Model(building1)
+    activate BM
+    BM --> BRe: building1Model
+    deactivate
+    BRe --> FS: building1Model
+    deactivate
+    FS -> FRe: findByBuildingId(buildingId1)
+    activate FRe
+    loop (for each floor)
+    FRe -> FM: Map2Model(floor1)
+    activate FM
+    FM --> FRe: floor1Model
+    deactivate
+    end loop
+    FRe --> FS: floors1Model
+    deactivate
+    FS -> FS: fillList
+    loop (for each floor)
+    FS -> FM: map2DTO(floor1Model)
+    activate FM
+    FM --> FS: floor1DTO
+    deactivate
+    end loop
+    FS --> FC: floors1DTO
+    deactivate
+    FC --> FR: response(floors1DTO as json)
+    deactivate
+    FR --> UI: floors1(json)
+    deactivate FR
+   UI -> FR: GET /floors/buildingId2
+   activate FR
+  FR -> FC: listFloors(buildingId2)
+  activate FC
+    FC -> FS: listFloors(buildingId2)
+    activate FS
+    FS -> BRe: findByDomainId(buildingId2)
+    activate BRe
+    BRe -> BM: Map2Model(building2)
+    activate BM
+    BM --> BRe: building2Model
+    deactivate
+    BRe --> FS: building2Model
+    deactivate
+    FS -> FRe: findByBuildingId(buildingId2)
+    activate FRe
+    loop (for each floor)
+    FRe -> FM: Map2Model(floor2)
+    activate FM
+    FM --> FRe: floor2Model
+    deactivate
+    end loop
+    FRe --> FS: floors2Model
+    deactivate
+    FS -> FS: fillList
+    loop (for each floor)
+    FS -> FM: map2DTO(floor2Model)
+    activate FM
+    FM --> FS: floor2DTO
+    deactivate
+    end loop
+    FS --> FC: floors2DTO
+    deactivate
+    FC --> FR: response(floors2DTO as json)
+    deactivate    
+   FR --> UI: floors2(json)
+   deactivate FR
+   UI --> CP: lists building connections between the two buildings
+   deactivate UI
+@enduml

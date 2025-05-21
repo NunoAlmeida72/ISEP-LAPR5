@@ -1,0 +1,139 @@
+<button mat-button routerLink=""><mat-icon>home</mat-icon></button>
+<button mat-button [matMenuTriggerFor]="building" *ngIf="campus">
+  <div class="valign-center"><span>Building</span>
+    <i class="material-icons">arrow_drop_down</i>
+  </div>
+</button>
+<button mat-button [matMenuTriggerFor]="floor" *ngIf="campus">
+  <div class="valign-center"><span>Floor</span>
+    <i class="material-icons">arrow_drop_down</i>
+  </div>
+</button>
+<button mat-button [matMenuTriggerFor]="bc" *ngIf="campus">
+  <div class="valign-center"><span>Building Connection</span>
+    <i class="material-icons">arrow_drop_down</i>
+  </div>
+</button>
+<button mat-button [matMenuTriggerFor]="elevator" *ngIf="campus">
+  <div class="valign-center"><span>Elevator</span>
+    <i class="material-icons">arrow_drop_down</i>
+  </div>
+</button>
+<button mat-button [matMenuTriggerFor]="room" *ngIf="campus">
+  <div class="valign-center"><span>Room</span>
+    <i class="material-icons">arrow_drop_down</i>
+  </div>
+</button>
+<button mat-button [matMenuTriggerFor]="robotType" *ngIf="frota">
+  <div class="valign-center"><span>Robot Type</span>
+    <i class="material-icons">arrow_drop_down</i>
+  </div>
+</button>
+<button mat-button [matMenuTriggerFor]="robot" *ngIf="frota">
+  <div class="valign-center"><span>Robot</span>
+    <i class="material-icons">arrow_drop_down</i>
+  </div>
+</button>
+
+<button mat-button [matMenuTriggerFor]="taskRobotType" *ngIf="frota">
+  <div class="valign-center"><span>Robot Type Tasks</span>
+    <i class="material-icons">arrow_drop_down</i>
+  </div>
+</button>
+
+<button mat-button [matMenuTriggerFor]="taskRequest" *ngIf="authed">
+  <div class="valign-center"><span>Task Requests</span>
+    <i class="material-icons">arrow_drop_down</i>
+  </div>
+</button>
+
+<button mat-button [matMenuTriggerFor]="user" *ngIf="admin">
+  <div class="valign-center"><span>Users</span>
+    <i class="material-icons">arrow_drop_down</i>
+  </div>
+</button>
+
+<button mat-button [matMenuTriggerFor]="role" *ngIf="admin">
+  <div class="valign-center"><span>Roles</span>
+    <i class="material-icons">arrow_drop_down</i>
+  </div>
+</button>
+
+<button mat-button [matMenuTriggerFor]="path" *ngIf="admin">
+  <div class="valign-center"><span>Path</span>
+    <i class="material-icons">arrow_drop_down</i>
+  </div>
+</button>
+
+<button mat-button routerLink="system" style="margin-left: auto;" *ngIf="admin"><mat-icon>info</mat-icon></button>
+<button mat-button routerLink="login" style="margin-left: auto;" *ngIf="!authed"><mat-icon>login</mat-icon></button>
+<button mat-button routerLink="me" style="margin-left: auto;" *ngIf="authed"><mat-icon>account_circle</mat-icon></button>
+<button mat-button routerLink="" (click)="logout()" style="margin-left: auto;" *ngIf="authed"><mat-icon>logout</mat-icon></button>
+
+<mat-menu #building="matMenu">
+  <button mat-menu-item routerLink="create-building">Create</button>
+  <button mat-menu-item routerLink="edit-building">Edit</button>
+  <button mat-menu-item routerLink="list-buildings">List</button>
+  <button mat-menu-item routerLink="list-buildings-by-min-max-number-of-floors">List By Min Max Number Of Floors</button>
+</mat-menu>
+
+<mat-menu #floor="matMenu">
+  <button mat-menu-item routerLink="create-floor">Create</button>
+  <button mat-menu-item routerLink="edit-floor">Edit</button>
+  <button mat-menu-item routerLink="list-floors">List From Buildings</button>
+  <button mat-menu-item routerLink="list-floors-with-connections">List With Connections</button>
+  <button mat-menu-item routerLink="list-floors-with-elevator">List With Elevator</button>
+  <button mat-menu-item routerLink="load-floor-map">Load Map</button>
+  <button mat-menu-item routerLink="view-floor">View Floor Map</button>
+</mat-menu>
+
+<mat-menu #bc="matMenu">
+  <button mat-menu-item routerLink="create-building-connection">Create</button>
+  <button mat-menu-item routerLink="list-building-connections">List</button>
+  <button mat-menu-item routerLink="edit-building-connections">Edit</button>
+</mat-menu>
+
+<mat-menu #elevator="matMenu">
+  <button mat-menu-item routerLink="create-elevator">Create</button>
+  <button mat-menu-item routerLink="edit-elevator">Edit</button>
+  <button mat-menu-item routerLink="list-elevator">List From Buildings</button>
+</mat-menu>
+
+<mat-menu #room="matMenu">
+  <button mat-menu-item routerLink="create-room">Create</button>
+</mat-menu>
+
+<mat-menu #robotType="matMenu">
+  <button mat-menu-item routerLink="create-robot-type">Create</button>
+</mat-menu>
+
+<mat-menu #taskRobotType="matMenu">
+  <button mat-menu-item routerLink="create-task-robot-type">Create</button>
+</mat-menu>
+
+<mat-menu #robot="matMenu">
+  <button mat-menu-item routerLink="create-robot">Create</button>
+  <button mat-menu-item routerLink="disable-robot">Disable</button>
+  <button mat-menu-item routerLink="list-robots">List</button>
+  <button mat-menu-item routerLink="list-robots-task-designation">List By Task or Designation</button>
+</mat-menu>
+
+<mat-menu #taskRequest="matMenu">
+  <button mat-menu-item routerLink="create-task-request" *ngIf="authed">Create</button>
+  <button mat-menu-item routerLink="list-accept-or-refuse-requests" *ngIf="task">List Pending Requests</button>
+  <button mat-menu-item routerLink="list-task-requests" *ngIf="task">List Task Requests</button>
+  <button mat-menu-item routerLink="list-task-execution" *ngIf="task">Task Requests Sequence</button>
+</mat-menu>
+
+<mat-menu #user="matMenu">
+  <button mat-menu-item routerLink="create-user">Create</button>
+  <button mat-menu-item routerLink="accept-refuser-user-registration">User Registration Requests</button>
+</mat-menu>
+
+<mat-menu #role="matMenu">
+  <button mat-menu-item routerLink="create-role">Create</button>
+</mat-menu>
+
+<mat-menu #path="matMenu">
+  <button mat-menu-item routerLink="path-campus">Path Between Rooms</button>
+</mat-menu>

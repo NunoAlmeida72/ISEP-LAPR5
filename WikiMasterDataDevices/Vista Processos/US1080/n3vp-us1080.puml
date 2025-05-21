@@ -1,0 +1,62 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+actor Campus_Manager as user
+participant UI 
+participant BuildingRoute as route
+participant BuildingController as controller
+participant BuildingService as service
+participant Building as domain
+participant BuildingMap as map
+participant BuildingRepository as repository
+
+
+user -> UI : 1. List Buildings sending an interval of number of floors
+activate UI
+
+UI -> route : 1.1 GET buildings/min/max
+activate route
+
+route -> controller: 1.2 listBuildingsInFloorLimit()
+  activate controller
+    controller -> service: 1.3 listBuildingsInFloorLimit(min,max)
+    activate service
+    service -> repo: 1.4 findByDomainId(buildingId)
+    activate repo
+    repo -> mapper: 1.5 Map2Model(buildingData)
+    activate mapper
+    mapper --> repo: 1.5.1 building
+    deactivate
+    repo --> service: 1.6 building
+    deactivate
+    loop (for each building)
+    service -> repoFloor: 1.7 floorInLimit(buildingId,min,max)
+    activate repoFloor
+    repoFloor -> mapperFloor: 1.8 Map2Model(floorData)
+    activate mapperFloor
+    mapperFloor --> repoFloor: 1.9 floor
+    deactivate
+    repoFloor --> service: 1.10 boolean
+    deactivate
+    service -> service: 1.11 fillList
+    service -> mapper: 1.12 map2DTO(building)
+    activate mapper
+    mapper --> service: 1.13 buildingDTO
+    deactivate
+    end loop
+
+
+    service --> controller: 1.14 list
+    deactivate
+    controller --> route: 1.15 response(list as json)
+route --> UI : 1.16 buildings(JSON)
+deactivate route
+
+UI --> user : 1.17 List of Buildings
+
+deactivate UI
+@enduml

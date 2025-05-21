@@ -1,0 +1,121 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+participant ElevatorRoute  as route
+participant ElevatorController as controller
+participant "mapper2:Json2DTO" as jsonMapper
+participant "IElevatorDTO1:IElevatorDTO" as dto1
+participant "IElevatorDTO1.1:IElevatorDTO" as dto2
+participant "IElevatorService1:IElevatorService" as service
+participant "Elevator1:Elevator" as domain
+participant "ElevatorRepo1:IElevatorRepo" as repository
+participant "FloorRepo1:IFloorRepo" as repository2
+participant "mapper2:Domain2Data" as mapper1
+participant "Elevator1:ElevatorData" as data
+participant "dbDriver1:IDBDriver" as db
+participant "Elevator1saved:Elevator" as savedDomain
+participant "Elevatorsaved1:ElevatorData" as savedData
+
+
+-> route: Put/Patch /Elevators / (json)
+activate route
+  route->controller: createElevator(json)
+  activate controller
+    controller -> controller:validate(json)
+    controller -> jsonMapper:map2DTO(json)
+    activate jsonMapper
+    jsonMapper -> dto1**:create(json)
+    dto1-->jsonMapper:ElevatorDTO1
+    jsonMapper --> controller:ElevatorDTO1
+    deactivate
+    controller ->service:createElevator(ElevatorDTO1)
+    activate service
+    service -> repository2:findFloor(ElevatorDTO1)
+    activate repository2
+    repository2 -> service:foundFloor
+    deactivate repository2
+
+    alt foundFloor == false
+    service -> controller:floorNotFound
+    controller -> route:floorNotFound
+    <- route:response
+    end
+    
+    service -> domain** :create(ElevatorDTO1)
+    domain --> service:Elevator1
+    service -> repository:save(Elevator1)
+
+    activate repository
+    repository -> mapper1:map2Data(Elevator1)
+    activate mapper1
+    mapper1 -> domain:getCode()
+    activate domain
+    domain--> mapper1:code
+    mapper1 -> domain:getBrand()
+    domain--> mapper1:brand
+    mapper1 -> domain:getModel()
+    domain--> mapper1:model
+    mapper1 -> domain:getSerialNumber()
+    domain--> mapper1:serialNumber
+    mapper1 -> domain:getBuildingId()
+    domain--> mapper1:building
+    mapper1 -> domain:getFloorsIds()
+    domain--> mapper1:floors
+    deactivate
+    mapper1 -> data**:create(code,brand,model,serialNumber, buildingId, floorIds ...)
+    data --> mapper1:ElevatorData
+    mapper1 --> repository:ElevatorData
+    deactivate
+    repository -> db:save(ElevatorData)
+    activate db
+    db -> savedData**:create(savedElevator)
+    db --> repository:savedElevator
+    deactivate
+    repository->mapper1:map2Model(savedElevator)
+    activate mapper1
+    mapper1 -> savedDomain**
+    savedDomain --> mapper1:ElevatorSaved
+    mapper1 --> repository:ElevatorSaved
+    repository --> service:ElevatorSaved
+    deactivate
+    deactivate
+    service -> jsonMapper: map2dto(ElevatorSaved)
+    activate jsonMapper
+    jsonMapper -> savedDomain: getName()
+    activate savedDomain
+    savedDomain --> jsonMapper:name
+    jsonMapper -> savedDomain: getCode()
+    savedDomain --> jsonMapper:code
+    jsonMapper -> savedDomain: getBrand()
+    savedDomain --> jsonMapper:brand
+    jsonMapper -> savedDomain: getModel()
+    savedDomain --> jsonMapper:model
+    jsonMapper -> savedDomain: getSerialNumber()
+    savedDomain --> jsonMapper:serialNumber
+    jsonMapper -> savedDomain: getFloorsIds()
+    savedDomain --> jsonMapper:floorsIds
+
+    deactivate
+    jsonMapper --> dto2**:create(code,brand,model,serialNumber, buildingId, floorIds ...)
+    dto2 --> jsonMapper:savedElevatorDTO
+    jsonMapper --> service: savedElevatorDTO
+    deactivate
+    service --> controller:savedElevatorDTO
+    deactivate
+    controller -> jsonMapper:map2Json(savedElevatorDTO):json
+    activate jsonMapper
+    jsonMapper --> controller:json
+    deactivate
+    controller->controller:generateRes(json)
+    controller--> route:response
+    deactivate
+    <- route:response
+    deactivate
+
+
+
+@enduml

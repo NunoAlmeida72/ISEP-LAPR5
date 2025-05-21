@@ -1,0 +1,25 @@
+/* src/app/app.component.css */
+
+.user-profile {
+  max-width: 400px;
+  margin: auto;
+  margin-top: 5%;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.center-button {
+  text-align: center;
+}
+
+h1 {
+  color: black;
+}
+
+p {
+  font-size: medium;
+  margin: 10px 0;
+  color: black;
+}

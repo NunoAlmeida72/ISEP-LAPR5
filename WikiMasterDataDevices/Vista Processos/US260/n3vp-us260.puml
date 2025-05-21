@@ -1,0 +1,68 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+participant BuildingConnectionRoute  as route
+participant BuildingConnectionController as controller
+participant BuildingConnectionService as service
+participant BuildingConnection as domain
+participant BuildingConnectionRepo as repo
+participant BuildingConnectionMap as mapper
+participant FloorRepo as repoFloor
+participant FloorMap as mapperFloor
+
+
+
+-> route: Get /buildingConnections / (json)
+activate route
+  route -> controller: listBuildingConnection(json)
+  activate controller
+    controller -> service: listBuildingConnection(json as string)
+    activate service
+    service -> repo: findAll()
+    activate repo
+    repo -> : find()
+    loop (for each buildingConnection)
+    repo -> mapper: Map2Model(buildingConnection)
+    activate mapper
+    mapper --> repo: buildingConnection
+    deactivate
+    end loop
+    repo --> service: buildingConnectionList
+    deactivate
+    loop (for each buildingConnection)
+    service -> repoFloor: findByDomainId(buildingConnection.floor1Id)
+    activate repoFloor
+    repoFloor -> : findOne(buildingConnection.floor1Id)
+    repoFloor -> mapperFloor: Map2Model(floor1Data)
+    activate mapperFloor
+    mapperFloor --> repoFloor: floor1
+    deactivate
+    repoFloor --> service: floor1
+    deactivate
+    service -> repoFloor: findByDomainId(buildingConnectionDTO.floor2Id)
+    activate repoFloor
+    repoFloor -> : findOne(buildingConnection.floor2Id)
+    repoFloor -> mapperFloor: Map2Model(floor2Data)
+    activate mapperFloor
+    mapperFloor --> repoFloor: floor2
+    deactivate
+    repoFloor --> service: floor2
+    deactivate
+    service -> mapper: Map2DTO(buildingConnection)
+    activate mapper
+    mapper --> service: buildingConnectionDTO
+    deactivate
+    service -> service: buildingConnectionDTOList.push(buildingConnectionDTO)
+    end loop
+    service --> controller: buildingConnectionDTOList
+    deactivate
+    controller --> route: response(buildingConnectionDTOList as json)
+    deactivate
+    <-- route: response
+    deactivate
+
+@enduml

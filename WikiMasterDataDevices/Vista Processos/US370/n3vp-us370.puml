@@ -1,0 +1,58 @@
+    @startuml
+    'http://plantuml.com/skinparam.html
+    skinparam monochrome true
+    skinparam packageStyle rect
+    skinparam shadowing false
+
+
+    participant RobotRoute  as route
+    participant RobotController as controller
+    participant RobotService as service
+    participant Robot as domain
+    participant RobotRepo as repo
+    participant RobotMap as mapper
+
+    -> route: Patch /robots/disable (json)
+    activate route
+    route -> controller: disableRobot(json)
+    activate controller
+        controller -> service: disableRobot(json as IRobotDTO)
+        activate service
+        service -> repo: findByDomainId(robotId)
+        activate repo
+        repo -> : findOne(robotId)
+        repo -> mapper: Map2Model(robotData)
+        activate mapper
+        mapper --> repo: robot
+        deactivate
+        repo --> service: robot
+        deactivate
+        service -> domain**: setStatus(false)
+        activate domain
+        domain --> service: robot
+        deactivate
+        service -> repo: save(robot)
+        activate repo
+        repo -> mapper: Map2Data(robot)
+        activate mapper
+        mapper --> repo: robotData
+        deactivate
+        repo -> : save(robotData)
+        repo -> mapper: Map2Model(robotData)     
+        activate mapper
+        mapper --> repo: robot1
+        deactivate
+        repo --> service: robot1
+        deactivate
+        service -> mapper: Map2DTO(robot1)
+        activate mapper
+        mapper--> service: robot1DTO
+        deactivate
+        service --> controller: robot1DTO
+        deactivate
+        controller --> route: response(robotDTO as json)
+        deactivate
+        <-- route: response
+        deactivate
+        
+    @enduml

@@ -1,0 +1,69 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+participant RobotRoute  as route
+participant RobotController as controller
+participant RobotService as service
+participant Robot as domain
+participant RobotRepo as repo
+participant RobotMap as mapper
+participant RobotTypeRepo as repoRobot
+participant RobotTypeMap as mapperRobot
+
+-> route: Post /robots / (json)
+activate route
+  route -> controller: createRobot(json)
+  activate controller
+    controller -> service: createRobot(json as IRobotDTO)
+    activate service
+    service -> repoRobot: findByDomainId(robotDTO.robotTypeId)
+    activate repoRobot
+    repoRobot -> : findOne(robotDTO.robotTypeId)
+    repoRobot -> mapperRobot: Map2Model(robotData)
+    activate mapperRobot
+    mapperRobot --> repoRobot: robotType
+    deactivate
+    repoRobot --> service: robotType
+    deactivate
+    service -> repo: findAll()
+    activate repo
+    repo -> : find()
+    loop (for each robot)
+    repo -> mapper: Map2Model(robotData)
+    activate mapper
+    mapper --> repo: robot
+    deactivate
+    end loop
+    repo --> service: robotList
+    deactivate
+    service -> domain**: create(robotDTO)
+    domain --> service: robot
+    service -> repo: save(robot)
+    activate repo
+    repo -> mapper:Map2Data(robot)
+    activate mapper
+    mapper --> repo: robotData
+    deactivate
+    repo -> : save(robotData)
+    repo -> mapper: Map2Model(robotData)     
+    activate mapper
+    mapper --> repo: robot1
+    deactivate
+    repo --> service: robot1
+    deactivate
+    service -> mapper: Map2DTO(robot1)
+    activate mapper
+    mapper--> service: robot1DTO
+    deactivate
+    service --> controller: robot1DTO
+    deactivate
+    controller --> route: response(robotDTO as json)
+    deactivate
+    <-- route: response
+    deactivate
+    
+@enduml

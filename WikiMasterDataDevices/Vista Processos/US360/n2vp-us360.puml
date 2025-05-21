@@ -1,0 +1,13 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant MDD as route
+
+-> route: POST /robots
+activate route
+  <-- route: 201 CREATED
+  deactivate
+@enduml

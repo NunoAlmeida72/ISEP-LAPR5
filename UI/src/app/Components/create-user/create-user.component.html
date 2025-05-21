@@ -1,0 +1,49 @@
+<mat-horizontal-stepper [linear]="isLinear" #stepper>
+  <mat-step [stepControl]="firstFormGroup">
+    <form [formGroup]="firstFormGroup">
+      <ng-template matStepLabel>Select one role</ng-template>
+      <mat-form-field>
+        <mat-select name="roleId" formControlName="role">
+          <mat-option *ngFor="let role of roles" [value]="role.id">{{role.name}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="secondFormGroup">
+    <form [formGroup]="secondFormGroup">
+      <ng-template matStepLabel>Fill out user information</ng-template>
+      <mat-form-field>
+        <input name="firstName" type="text" matInput placeholder="First Name" formControlName="firstName" required>
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <input name="lastName" type="text" matInput placeholder="Last Name" formControlName="lastName" required>
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <input name="phoneNumber" type="number" matInput placeholder="Phone Number" formControlName="phoneNumber" required>
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <input name="email" type="email" matInput placeholder="Email" formControlName="email" required>
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <input name="password" type="password" matInput placeholder="Password" formControlName="password" required>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Create</ng-template>
+    <div>
+      <button mat-button (click)="createUser();stepper.reset()">Create</button>
+    </div>
+  </mat-step>
+</mat-horizontal-stepper>

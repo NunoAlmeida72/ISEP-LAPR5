@@ -1,0 +1,15 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant Admin as AD
+participant System as sys
+
+activate AD
+ AD -> sys: accept-refuser-user-registration
+  activate sys
+  sys --> AD: User approved/rejected
+  deactivate sys
+@enduml

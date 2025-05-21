@@ -1,0 +1,54 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+participant BuildingRoute  as route
+participant BuildingController as controller
+participant BuildingService as service
+participant BuildingMap as mapper
+participant BuildingRepo as repo
+participant FloorMap as mapperFloor
+participant FloorRepo as repoFloor
+
+-> route: Get /buildings/:min&:max (json)
+activate route
+  route -> controller: listBuildingsInFloorLimit()
+  activate controller
+    controller -> service: listBuildingsInFloorLimit(min,max)
+    activate service
+    service -> repo: findByDomainId(buildingId)
+    activate repo
+    repo -> mapper: Map2Model(buildingData)
+    activate mapper
+    mapper --> repo: building
+    deactivate
+    repo --> service: building
+    deactivate
+    loop (for each building)
+    service -> repoFloor: floorInLimit(buildingId,min,max)
+    activate repoFloor
+    repoFloor -> mapperFloor: Map2Model(floorData)
+    activate mapperFloor
+    mapperFloor --> repoFloor: floor
+    deactivate
+    repoFloor --> service: boolean
+    deactivate
+    service -> service: fillList
+    service -> mapper: map2DTO(building)
+    activate mapper
+    mapper --> service: buildingDTO
+    deactivate
+    end loop
+
+
+    service --> controller: list
+    deactivate
+    controller --> route: response(list as json)
+    deactivate
+    <-- route: response
+    deactivate
+    
+@enduml

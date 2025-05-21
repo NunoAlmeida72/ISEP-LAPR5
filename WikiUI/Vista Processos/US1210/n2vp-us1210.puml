@@ -1,0 +1,40 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant CampusManager as CP
+participant UI as UI
+participant MasterDataDevices as MDD
+
+activate CP
+ CP -> UI: createRoom
+  activate UI
+   UI -> MDD: GET /buildings
+   activate MDD
+    MDD --> UI: buildings(json)
+   deactivate MDD
+   UI --> CP: displays buildings and asks to choose one
+  deactivate UI
+ CP -> UI: chooses one building
+  activate UI
+   UI -> MDD: GET /floors/buildingId
+   activate MDD
+    MDD --> UI: floors(json)
+   deactivate MDD
+   UI --> CP: displays floors and asks to choose one
+  deactivate UI
+  CP -> UI: chooses floor
+   activate UI
+   UI --> CP: asks to fill room data
+   deactivate UI
+  CP -> UI: fills room data
+  activate UI
+   UI -> MDD: POST /rooms
+   activate MDD
+    MDD --> UI: room(json)
+   deactivate MDD
+   UI --> CP: room created
+  deactivate UI
+@enduml

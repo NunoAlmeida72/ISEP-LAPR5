@@ -1,0 +1,46 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant TaskManager as TM
+participant UI as UI
+participant MasterDataDevices as MDD
+participant MasterDataTasks as MDT
+participant UserManagement as UM
+
+activate TM
+ TM -> UI: list-accept-or-refuse-requests
+  activate UI
+   UI -> MDT: GET /TaskRequest/unapproved
+   activate MDT
+    MDT --> UI: TaskRequests
+   deactivate MDT
+   UI -> MDD: GET /robot-type-tasks
+   activate MDD
+    MDD --> UI: Tasks
+   deactivate MDD
+   UI -> MDD: GET /rooms
+   activate MDD
+    MDD --> UI: Rooms
+   deactivate MDD
+   UI -> UM: GET /auth/all/users
+   activate UM
+    UM --> UI: Users
+   deactivate UM
+   UI -> MDD: GET /robots
+   activate MDD
+    MDD --> UI: robots
+   deactivate MDD
+   UI -> MDD: GET /robotTypes
+   activate MDD
+    MDD --> UI: RobotTypes
+   deactivate MDD
+   UI -> MDT: PATCH /taskRequest/:requestId/:status/:robotId
+   activate MDT
+    MDT --> UI: TaskRequest(json)
+   deactivate MDT
+  UI --> TM: Task Request approved/refused
+  deactivate UI
+@enduml

@@ -1,0 +1,40 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant CampusManager as CP
+participant UI as UI
+participant MasterDataDevices as MDD
+
+activate CP
+ CP -> UI: createBuildingConnection
+  activate UI
+   UI -> MDD: GET /buildings
+   activate MDD
+    MDD --> UI: buildings(json)
+   deactivate MDD
+   UI --> CP: displays buildings and asks to choose two
+  deactivate UI
+ CP -> UI: chooses both buildings
+  activate UI
+   UI -> MDD: GET /floors/buildingId1
+   activate MDD
+    MDD --> UI: floors1(json)
+   deactivate MDD
+   UI -> MDD: GET /floors/buildingId2
+   activate MDD
+    MDD --> UI: floors2(json)
+   deactivate MDD
+   UI --> CP: displays floors of each building and asks to choose two
+  deactivate UI
+  CP -> UI: chooses both floors
+   activate UI
+   UI -> MDD: POST /buildingConnections
+    activate MDD
+    MDD --> UI: buildingconnection(json)
+    deactivate MDD
+   UI --> CP: buildingconnection created
+   deactivate UI
+@enduml

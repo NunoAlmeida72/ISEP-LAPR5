@@ -1,0 +1,22 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant User as user
+participant UI as UI
+participant UserManagement as UM
+
+
+activate user
+ user -> UI: delete me
+  activate UI
+   UI -> UM: Delete /account/me
+   activate UM
+    UM --> UI: User(json)
+   deactivate UM
+  UI --> user: User deleted
+  deactivate UI
+  deactivate user
+@enduml

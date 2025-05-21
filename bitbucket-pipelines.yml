@@ -1,0 +1,23 @@
+#  Template NodeJS build
+
+#  This template allows you to validate your NodeJS code.
+#  The workflow allows running tests and code linting on the default branch.
+
+image: node:18.18.0
+
+pipelines:
+  default:
+  - step:
+        name: Build and Test
+        caches:
+          - node
+        script:
+          - cd MasterDataDevices
+          - npm install
+          - npm test
+    - step:
+        name: Deploy to test
+        deployment: test
+        script:
+          - scp -o "Port=10944" -r * sem5pi@vsgate-ssh.dei.isep.ipp.pt:~/sem5pi-23-24-68
+          - ssh -p 10944 sem5pi@vsgate-ssh.dei.isep.ipp.pt './initialize.sh'

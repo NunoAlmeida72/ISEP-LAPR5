@@ -1,0 +1,15 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant USER as user
+participant System as sys
+
+activate user
+ user -> sys: Delete me
+  activate sys
+  sys --> user: User deleted
+  deactivate sys
+@enduml

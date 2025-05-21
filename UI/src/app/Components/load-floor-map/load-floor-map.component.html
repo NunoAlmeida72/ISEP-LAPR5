@@ -1,0 +1,192 @@
+<mat-horizontal-stepper [linear]="isLinear" #stepper>
+  <mat-step [stepControl]="firstFormGroup">
+    <form [formGroup]="firstFormGroup">
+      <ng-template matStepLabel>Select one building</ng-template>
+      <mat-form-field>
+        <mat-select name="buildingId" formControlName="firstCtrl" >
+          <mat-option *ngFor="let building of buildings" [value]="building">{{building.code}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperNext (click)="getFloors()">Next</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="secondFormGroup">
+    <form [formGroup]="secondFormGroup">
+      <ng-template matStepLabel>Select one floor</ng-template>
+      <mat-form-field>
+        <mat-select name="floorId" formControlName="firstCtrl">
+          <mat-option *ngFor="let floor of floors" [value]="floor">{{floor.number}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext (click)="getFloor()">Next</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="thirdFormGroup">
+      <ng-template matStepLabel>Load the map and the initial parameters</ng-template>
+      <h3 *ngIf="!valid">Map:</h3>
+      <input #fileInput *ngIf="!valid" type="file" id="file" accept=".json" (change)="readJsonFile($event)">
+      <br><br>
+      <button *ngIf="!valid" mat-button matStepperPrevious>Back</button>
+      <button *ngIf="!valid" mat-button (click)="checkMatrix()">Validate Map</button>
+      <form [formGroup]="thirdFormGroup" *ngIf="valid">
+      <h3>Initial Position:</h3>
+      <h4>Row: 
+      <mat-form-field>
+          <input matInput type="number" min="0" max="{{depth}}" formControlName="firstCtrl"/>
+      </mat-form-field>
+    </h4>
+    <h4>Column:  
+      <mat-form-field>
+          <input matInput type="number" min="0" max="{{width}}" formControlName="secondCtrl"/>
+      </mat-form-field>
+    </h4>
+
+    <h3>Initial Direction:</h3>
+      <mat-form-field>
+          <input matInput type="number" min="0" max="360" formControlName="thirdCtrl"/>
+      </mat-form-field>
+      <div>
+        <button mat-button (click)="valid=!valid;">Back</button>
+
+        <button mat-button matStepperNext (click)="getElevators()">Next</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="fourthFormGroup">
+    <form [formGroup]="fourthFormGroup">
+      <ng-template matStepLabel>Choose elevators</ng-template>
+      <mat-form-field>
+        <mat-select name="elevator" formControlName="firstCtrl" multiple>
+          <mat-option *ngFor="let elevator of elevators" [value]="elevator">{{elevator.code}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext (click)="getElevator()">Next</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="fifthFormGroup" *ngIf="elevators1.length!=0">
+    <form [formGroup]="fifthFormGroup">
+      <ng-template matStepLabel>Choose elevators positions</ng-template>
+      <mat-form-field *ngFor="let elevator of elevators1 ; let i=index">
+        <h3>{{elevator.code}}:
+        <h4>Row: 
+        <input matInput type="number" min="0" max="{{depth}}" formControlName="firstCtrl"  [(ngModel)]="posXElevators[i]"/>
+        <br>
+        </h4>
+        <h4>Column:
+        <input matInput type="number" min="0" max="{{width}}" formControlName="secondCtrl" [(ngModel)]="posYElevators[i]"/>
+        </h4>
+        </h3>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext (click)="getBuildingConnections()">Next</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="sixthFormGroup">
+    <form [formGroup]="sixthFormGroup">
+      <ng-template matStepLabel>Choose building connections</ng-template>
+      <mat-form-field>
+        <mat-select name="bc" formControlName="firstCtrl" multiple>
+          <mat-option *ngFor="let bc of buildingConnections;let i=index" [value]="bc">{{i + 1}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext (click)="getBuildingConnection()">Next</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="seventhFormGroup" *ngIf="buildingConnections1.length!=0">
+    <form [formGroup]="seventhFormGroup">
+      <ng-template matStepLabel>Choose building connections positions</ng-template>
+      <mat-form-field *ngFor="let bc of buildingConnections1 ; let i=index">
+        <h3>{{i + 1}}:
+        <h4>Row: 
+        <input matInput type="number" min="0" max="{{depth}}" formControlName="firstCtrl"  [(ngModel)]="posXBcs[i]"/>
+        <br>
+        </h4>
+        <h4>Column:
+        <input matInput type="number" min="0" max="{{width}}" formControlName="secondCtrl" [(ngModel)]="posYBcs[i]"/>
+        </h4>
+        </h3>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext (click)="getRooms()">Next</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="eighthFormGroup">
+    <form [formGroup]="eighthFormGroup">
+      <ng-template matStepLabel>Choose rooms</ng-template>
+      <mat-form-field>
+        <mat-select name="bc" formControlName="firstCtrl" multiple>
+          <mat-option *ngFor="let room of rooms;let i=index" [value]="room">{{room.name}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext (click)="getRoom()">Next</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="ninthFormGroup" *ngIf="rooms1.length!=0">
+    <form [formGroup]="ninthFormGroup">
+      <ng-template matStepLabel>Choose rooms positions</ng-template>
+      <mat-form-field *ngFor="let room of rooms1 ; let i=index">
+        <h3>{{room.name}}:
+        <h4>Row: 
+        <input matInput type="number" min="0" max="{{depth}}" formControlName="firstCtrl"  [(ngModel)]="posXRooms[i]"/>
+        <br>
+        </h4>
+        <h4>Column:
+        <input matInput type="number" min="0" max="{{width}}" formControlName="secondCtrl" [(ngModel)]="posYRooms[i]"/>
+        </h4>
+        <h4>Width:
+          <input matInput type="number" min="0" max="{{width}}" formControlName="thirdCtrl" [(ngModel)]="widthRooms[i]"/>
+          </h4>
+        <h4>Depth:
+          <input matInput type="number" min="0" max="{{depth}}" formControlName="fourthCtrl" [(ngModel)]="heigthRooms[i]"/>
+        </h4>
+        <h4>Door Row:
+          <input matInput type="number" min="0" max="{{width}}" formControlName="fifthCtrl" [(ngModel)]="posXDoors[i]"/>
+          </h4>
+        <h4>Door Column:
+          <input matInput type="number" min="0" max="{{depth}}" formControlName="sixthCtrl" [(ngModel)]="posYDoors[i]"/>
+        </h4>
+        </h3>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Load Map</ng-template>
+    <div *ngIf="!readyToLoad">
+      <button mat-button (click)="loadJson()">Check choices</button>
+    </div>
+    <div *ngIf="readyToLoad">
+      <button mat-button (click)="reset();stepper.reset()">Load</button>
+    </div>
+  </mat-step>
+</mat-horizontal-stepper>

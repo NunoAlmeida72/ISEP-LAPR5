@@ -1,0 +1,15 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant CampusManager as CP
+participant System as sys
+
+activate CP
+ CP -> sys: updateBuildingConnection
+  activate sys
+  sys --> CP: buildingConnection updated
+  deactivate sys
+@enduml

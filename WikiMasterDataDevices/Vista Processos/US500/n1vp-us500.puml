@@ -1,0 +1,22 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant System as route
+
+-> route: Get /robots
+activate route
+<-- route: 200 OK
+Group Option bruteforce
+-> route: Get /taskRequest/sequence/robotId
+
+end
+Group Option Genetic
+-> route: Get /taskRequest/genetic/robotId
+
+end
+  <-- route: 200 OK
+  deactivate
+@enduml

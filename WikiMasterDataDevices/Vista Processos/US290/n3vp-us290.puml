@@ -1,0 +1,85 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+participant elevatorsRoute  as route
+participant elevatorsController as controller
+participant "mapper2:Json2DTO" as jsonMapper
+participant "IelevatorsDTO1:IelevatorsDTO" as dto1
+participant "IelevatorsDTO1.1:IelevatorsDTO" as dto2
+participant "IelevatorsService1:IelevatorsService" as service
+participant "elevators1:elevators" as domain
+participant "elevatorsRepo1:IelevatorsRepo" as repository
+participant "mapper2:Domain2Data" as mapper1
+participant "elevators1:elevatorsData" as data
+participant "dbDriver1:IDBDriver" as db
+participant "elevators1saved:elevators" as savedDomain
+participant "elevatorssaved1:elevatorsData" as savedData
+
+
+
+-> route: Get /Elevators/ buildingId / (json)
+activate route
+  route->controller: getElevators(json)
+  activate controller
+    controller ->service:listElevatorss()
+    activate service
+    service->repository:findBy(buildingId)
+    activate repository
+    repository -> db:find()
+    activate db
+    loop foreach savedelevators
+      db -> savedData**:create(savedelevators)
+    end
+    db --> repository:savedelevatorss
+    deactivate
+    loop foreach savedelevators
+    repository->mapper1:map2Model(savedelevators)
+    activate mapper1
+    mapper1 -> savedDomain**
+    savedDomain --> mapper1:elevatorsSaved
+    mapper1 --> repository:elevatorsSaved
+    end
+    repository --> service:elevatorsSaved
+    deactivate
+    deactivate
+    loop foreach savedelevators                     
+    service -> jsonMapper: map2dto(elevatorsSaved)
+    activate jsonMapper
+    jsonMapper -> savedDomain: getCode()
+    activate savedDomain
+    savedDomain --> jsonMapper:code
+    jsonMapper -> savedDomain: getBrand()
+    savedDomain --> jsonMapper:brand
+    jsonMapper -> savedDomain: getModel()
+    savedDomain --> jsonMapper:model
+    jsonMapper -> savedDomain: getSerialNumber()
+    savedDomain --> jsonMapper:serialNumber
+    jsonMapper -> savedDomain: getFloorsIds()
+    savedDomain --> jsonMapper:floorsIds
+    deactivate
+    jsonMapper --> dto2**:create(code,Brand,Model,SerialNumber,description, ...)
+    dto2 --> jsonMapper:savedelevatorsDTO            
+    jsonMapper --> service: savedelevatorsDTO
+    end
+    deactivate
+    service --> controller:savedelevatorsDTO
+    deactivate
+    controller -> jsonMapper:map2Json(savedselevatorsDTO):json
+    activate jsonMapper
+    jsonMapper --> controller:json
+    deactivate
+    controller->controller:generateRes(json)
+    controller--> route:response
+    deactivate
+    <- route:response
+    deactivate
+
+
+
+
+
+@enduml

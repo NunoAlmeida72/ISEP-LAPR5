@@ -1,0 +1,41 @@
+<mat-horizontal-stepper [linear]="isLinear" #stepper>
+  <mat-step [stepControl]="firstFormGroup">
+  <form [formGroup]="firstFormGroup" >
+    <ng-template matStepLabel>Select two buildings</ng-template>
+      <mat-form-field>
+        <mat-select name="buildingId1" formControlName="firstCtrl">
+          <mat-option *ngFor="let building of buildings" [value]="building.id">{{building.code}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <br>
+        <mat-form-field>
+          <mat-select name="buildingId2" formControlName="secondCtrl">
+            <mat-option *ngFor="let building of buildings" [value]="building.id">{{building.code}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+    <div>
+      <button mat-button matStepperNext (click)="getBuildingConnections()">Next</button>
+    </div>
+  </form>
+  </mat-step>
+  <mat-step>
+    <mat-divider></mat-divider>
+      <ng-template matStepLabel>Building Connections List</ng-template>
+      <table matTable *ngIf="(buildingconnections!=undefined); else noBuildingConnections">
+        <tr>
+          <th mat-header>Floor 1 number</th>
+          <th mat-header>Floor 2 number</th>
+        </tr>
+          <tr *ngFor="let buildingconnection of buildingconnections">
+          <td>{{ mapFloorIdToNumber(buildingconnection.floor1Id) }}</td>
+          <td>{{ mapFloorIdToNumber(buildingconnection.floor2Id) }}</td>
+        </tr>
+      </table>
+      <mat-divider></mat-divider>
+      <div>
+        <br>
+        <button mat-button (click)="stepper.reset();reset();">List other building connections</button>
+      </div>
+    </mat-step>
+    <ng-template #noBuildingConnections><br><mat-spinner [diameter]="30"></mat-spinner><br></ng-template>
+  </mat-horizontal-stepper>

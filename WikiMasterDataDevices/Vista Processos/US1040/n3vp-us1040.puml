@@ -1,0 +1,77 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+actor Fleet_Manager as user
+participant UI as ui
+participant TaskRoute  as taskRoute
+participant TaskController as taskController
+participant TaskService as taskService
+participant TaskRepo as taskRepo
+participant TaskMap as taskMapper
+participant RobotRoute  as route
+participant RobotController as controller
+participant RobotService as service
+participant Robot as domain
+participant RobotRepo as repo
+participant RobotMap as mapper
+
+activate user
+user -> ui : List robots by task or designation
+activate ui
+
+ui -> taskRoute: GET tasks
+activate taskRoute
+taskRoute->taskController: listTasks()
+  activate taskController
+    taskController -> taskService: listTasks()
+    activate taskService
+    taskService->taskRepo:findAll()
+    activate taskRepo
+    taskRepo-> :find()
+    loop foreach task
+      taskRepo -> taskMapper: Map2Model(data)
+      activate taskMapper
+      taskMapper --> taskRepo: task
+     deactivate taskMapper
+    end
+    taskRepo --> taskService: list
+    deactivate taskRepo
+    taskService --> taskController: list
+    deactivate taskService
+    taskController --> taskRoute: response(list as json)
+    deactivate taskController
+    taskRoute --> ui: response
+    deactivate taskRoute
+    ui --> user: list tasks and ask
+
+    user -> ui: choose tasks
+    ui -> route: GET robots/taskOrDesignation
+    activate route
+    route -> controller: listByTaskOrDesignation(json)
+    activate controller
+    controller -> service: listByTaskOrDesignation(taskOrDesignation)
+    activate service
+    service->repo:findAll()
+    activate repo
+    repo-> :find()
+    loop foreach Robot
+    repo -> mapper: Map2Model(data)
+    activate mapper
+    mapper --> repo: robot
+    deactivate mapper
+    end
+    repo --> service: list
+    deactivate repo
+    service --> controller: list
+    deactivate
+    controller --> route: response(list as json)
+    deactivate
+    route --> ui : response
+    deactivate
+    ui --> user: list robots by task or designation
+    deactivate
+
+@enduml

@@ -1,0 +1,152 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant CampusManager as CP
+participant UI as UI
+
+participant BuildingRoute as BR
+participant BuildingController as BC
+participant BuildingService as BS
+participant BuildingMap as BM
+participant BuildingRepo as BRe
+
+participant FloorRoute as FR
+participant FloorController as FC
+participant FloorService as FS
+participant FloorMap as FM
+participant FloorRepo as FRe
+
+participant RoomRoute as RR
+participant RoomController as RC
+participant RoomService as RS
+participant Room as RD
+participant RoomRepo as RRe
+participant RoomMap as RM
+
+activate CP
+ CP -> UI: createRoom
+  activate UI
+   UI -> BR: GET /buildings
+   activate BR
+    BR -> BC: listBuildings()
+    activate BC
+     BC -> BS: listBuildings()
+     activate BS
+      BS -> BRe: findAll()
+      activate BRe
+       BRe -> :find()
+       loop (for each building)
+        BRe -> BM: map2Model(building)
+        activate BM
+         BM --> BRe: buildingModel
+        deactivate BM
+       end loop
+        BRe --> BS: buildingsModel
+        deactivate BRe
+      loop (for each buildingModel)
+       BS -> BM: map2DTO(buildingModel)
+       activate BM
+        BM --> BS: buildingDTO
+       deactivate BM
+      end loop
+      BS --> BC: buildingsDTO
+     deactivate BS
+     BC --> BR: response(buildingsDTO as json)
+    deactivate BC 
+    BR --> UI: buildings(json)
+   deactivate BR
+   UI --> CP: displays buildings and asks to choose one
+  deactivate UI
+ CP -> UI: chooses one building
+  activate UI
+   UI -> FR: GET /floors/buildingId
+   activate FR
+  FR -> FC: listFloors(buildingId)
+  activate FC
+    FC -> FS: listFloors(buildingId)
+    activate FS
+    FS -> BRe: findByDomainId(buildingId)
+    activate BRe
+    BRe -> BM: Map2Model(building)
+    activate BM
+    BM --> BRe: buildingModel
+    deactivate
+    BRe --> FS: buildingModel
+    deactivate
+    FS -> FRe: findByBuildingId(buildingId)
+    activate FRe
+    loop (for each floor)
+    FRe -> FM: Map2Model(floor)
+    activate FM
+    FM --> FRe: floorModel
+    deactivate
+    end loop
+    FRe --> FS: floorsModel
+    deactivate
+    FS -> FS: fillList
+    loop (for each floor)
+    FS -> FM: map2DTO(floorModel)
+    activate FM
+    FM --> FS: floorDTO
+    deactivate
+    end loop
+    FS --> FC: floorsDTO
+    deactivate
+    FC --> FR: response(floorsDTO as json)
+    deactivate
+    FR --> UI: floors(json)
+   deactivate FR
+   UI --> CP: displays floors and asks to choose one
+  deactivate UI
+  CP -> UI: chooses floor
+   activate UI
+   UI --> CP: asks to fill room data
+   deactivate UI
+  CP -> UI: fills room data
+  activate UI
+   UI -> RR: POST /rooms
+   activate RR
+  RR -> RC: createRoom(json)
+  activate RC
+    RC -> RS: createRoom(json as IRoomDTO)
+    activate RS
+    RS -> FRe: findByDomainId(roomDTO.floorId)
+    activate FRe
+    FRe -> : findOne(roomDTO.floorId)
+    FRe -> FM: Map2Model(floor)
+    activate FM
+    FM --> FRe: floorModel
+    deactivate
+    FRe --> RS: floorModel
+    deactivate
+    RS -> RD**: create(roomDTO)
+    RD --> RS: room
+    RS -> RR: save(room)
+    activate RR
+    RR -> RM: Map2Data(buildingConnection)
+    activate RM
+    RM --> RR: roomData
+    deactivate
+    RR -> : save(roomData)
+    RR -> RM: Map2Model(roomData)     
+    activate RM
+    RM --> RR: roomModel
+    deactivate
+    RR --> RS: roomModel
+    deactivate
+    RS -> RM: Map2DTO(roomModel)
+    activate RM
+    RM --> RS: roomDTO
+    deactivate
+    RS --> RC: roomDTO
+    deactivate
+    RC --> RR: response(roomDTO as json)
+    deactivate RC
+    RR --> UI: room(json)
+   deactivate RR
+   UI --> CP: room created
+  deactivate UI
+@enduml

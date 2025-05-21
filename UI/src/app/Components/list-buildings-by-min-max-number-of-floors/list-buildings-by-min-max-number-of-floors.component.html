@@ -1,0 +1,29 @@
+<mat-horizontal-stepper [linear]="isLinear" #stepper>
+  <mat-step [stepControl]="firstFormGroup">
+    <form [formGroup]="firstFormGroup">
+    <ng-template matStepLabel>Fill out the minimum and maximum number of Floors</ng-template>
+    <mat-form-field>
+      <input name="minimum" matInput placeholder="minimum" formControlName="firstCtrl" required>
+    </mat-form-field>
+    <br>
+    <mat-form-field>
+      <input name="maximum" matInput placeholder="maximum" formControlName="secondCtrl" required>
+    </mat-form-field>
+    <div>
+      <button mat-button matStepperNext (click)="getBuildingsByMinMaxFloors()">Next</button>
+    </div>
+  </form>
+  </mat-step>
+
+  <mat-step>
+      <mat-divider></mat-divider>
+      <ng-template matStepLabel>Building list</ng-template>
+      <mat-list role="list" *ngIf="(buildings!=undefined); else noBuildings">
+          <mat-list-item *ngFor="let building of buildings">{{building.code}} {{building.description}}</mat-list-item>
+      </mat-list>
+      <mat-divider></mat-divider>
+  </mat-step>
+  <ng-template #noBuildings><br><mat-spinner [diameter]="30"></mat-spinner><br></ng-template>
+
+
+</mat-horizontal-stepper>

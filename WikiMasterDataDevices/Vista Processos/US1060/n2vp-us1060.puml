@@ -1,0 +1,24 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+actor User as user
+participant UI 
+participant MasterDataDevices 
+
+user -> UI : 1. List Buildings
+activate UI
+
+UI -> MasterDataDevices : 1.1 GET buildings
+activate MasterDataDevices
+
+MasterDataDevices --> UI : 1.2 buildings(JSON)
+deactivate MasterDataDevices
+
+UI --> user : 1.3 List of Buildings
+
+deactivate UI
+@enduml

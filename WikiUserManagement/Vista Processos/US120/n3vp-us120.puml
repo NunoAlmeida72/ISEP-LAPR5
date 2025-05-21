@@ -1,0 +1,45 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+participant UserRoute  as route
+participant UserController as controller
+participant UserService as service
+participant UserRepo as repo
+participant TaskController as taskController
+participant TaskService as taskService
+participant TaskRepo as taskRepo
+
+-> route: Delete /account/(json)
+activate route
+  route -> controller: deleteMe(json)
+  activate controller
+    controller -> service: deleteUser(userId as String)
+    activate service
+    service -> repo: deleteUser(userId)
+    activate repo
+    repo --> service: Confirmation
+    deactivate
+    service --> controller: Confirmation
+    deactivate
+    controller --> route: response(confirmation as json)
+    deactivate
+    <-- route: response
+    deactivate
+      --> taskController: delete/user/tasks/(json)
+      activate taskController
+        taskController -> taskService: deleteByUser(userId as String)
+        activate taskService
+        taskService -> taskRepo: getByUser(userId)
+        activate taskRepo
+        taskRepo --> taskService: Confirmation
+        deactivate
+        taskService --> taskController: Confirmation
+        deactivate
+        <-- taskController: response(confirmation as json)
+        deactivate
+
+@enduml

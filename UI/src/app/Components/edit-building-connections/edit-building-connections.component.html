@@ -1,0 +1,63 @@
+<mat-horizontal-stepper [linear]="isLinear" #stepper>
+    <mat-step [stepControl]="firstFormGroup">
+      <form [formGroup]="firstFormGroup">
+        <ng-template matStepLabel>Select two buildings</ng-template>
+        <mat-form-field>
+          <mat-select name="buildingId1" formControlName="firstCtrl">
+            <mat-option *ngFor="let building of buildings" [value]="building.id">{{building.code}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+          <mat-select name="buildingId2" formControlName="secondCtrl">
+            <mat-option *ngFor="let building of buildings" [value]="building.id">{{building.code}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperNext (click)="getBuildingConnections()">Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="secondFormGroup">
+      <form [formGroup]="secondFormGroup">
+        <ng-template matStepLabel>Select the building connection</ng-template>
+        <mat-form-field>
+          <mat-select name="buildingconnection" formControlName="thirdCtrl">
+            <mat-option *ngFor="let buildingconnection of buildingconnections" [value]="buildingconnection">{{mapFloorIdToNumber(buildingconnection.floor1Id)}} - {{mapFloorIdToNumber(buildingconnection.floor2Id)}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext (click)="chosenBuildingConnection()">Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step>
+      <form [formGroup]="thirdFormGroup">
+        <ng-template matStepLabel>Edit building connection information</ng-template>
+        <mat-form-field>
+            <mat-select name="floorId1" formControlName="firstCtrl">
+              <mat-option *ngFor="let floor of floors1" [value]="floor.id">{{floor.number}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <br>
+          <mat-form-field>
+            <mat-select name="floorId2" formControlName="secondCtrl">
+              <mat-option *ngFor="let floor of floors2" [value]="floor.id">{{floor.number}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <br>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Edit</ng-template>
+      <div>
+        <button mat-button (click)="editBuildingConnection();stepper.reset()">Edit</button>
+      </div>
+    </mat-step>
+  </mat-horizontal-stepper>
+  

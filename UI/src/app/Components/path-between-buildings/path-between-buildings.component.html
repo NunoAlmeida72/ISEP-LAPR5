@@ -1,0 +1,74 @@
+<mat-horizontal-stepper [linear]="isLinear" #stepper>
+  <mat-step [stepControl]="firstFormGroup">
+    <form [formGroup]="firstFormGroup">
+      <ng-template matStepLabel>Select buildings</ng-template>
+      <mat-form-field>
+        <mat-label>Building 1</mat-label>
+        <mat-select name="buildingId1" formControlName="firstCtrl">
+          <mat-option *ngFor="let building of buildings" [value]="building.id">{{building.code}}</mat-option>
+        </mat-select>        
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <mat-label>Building 2</mat-label>
+        <mat-select name="buildingId2" formControlName="secondCtrl">
+          <mat-option *ngFor="let building of buildings" [value]="building.id">{{building.code}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperNext (click)="getFloors()">Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="secondFormGroup">
+    <form [formGroup]="secondFormGroup">
+      <ng-template matStepLabel>Select Floors</ng-template>
+      <mat-form-field>
+        <mat-label>Floor 1</mat-label>
+        <mat-select name="floor1" formControlName="firstCtrl">
+          <mat-option *ngFor="let floor of floors1" [value]="floor.id">{{floor.number}}</mat-option>
+        </mat-select>        
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <mat-label>Floor 2</mat-label>
+        <mat-select name="floor2" formControlName="secondCtrl">
+          <mat-option *ngFor="let floor of floors2" [value]="floor.id">{{floor.number}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperNext (click)="getRooms()">Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="thirdFormGroup">
+    <form [formGroup]="thirdFormGroup">
+      <ng-template matStepLabel>Select Floors</ng-template>
+      <mat-form-field>
+        <mat-label>Room 1</mat-label>
+        <mat-select name="room1" formControlName="firstCtrl">
+          <mat-option *ngFor="let room of rooms1" [value]="room.id">{{room.name}}</mat-option>
+        </mat-select>        
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <mat-label>Room 2</mat-label>
+        <mat-select name="room2" formControlName="secondCtrl">
+          <mat-option *ngFor="let room of rooms2" [value]="room.id">{{room.name}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperNext (click)="getPath()">Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <div *ngIf="path.result==''">
+      There is no path between these floors.
+    </div>
+    <div *ngIf="path.result!=''">{{path.result}}</div>
+    <div>
+      <button mat-button (click)="reset();stepper.reset()">Choose another floors</button>
+    </div>
+  </mat-step>
+</mat-horizontal-stepper>

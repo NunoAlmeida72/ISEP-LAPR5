@@ -1,0 +1,34 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+actor User as user
+participant UI 
+participant MasterDataDevices 
+
+user -> UI : 1. Edit Building
+activate UI
+
+UI -> MasterDataDevices : 1.1 GET building and sends building data
+activate MasterDataDevices
+
+MasterDataDevices --> UI : 1.2 buildings(JSON)
+deactivate MasterDataDevices
+
+UI --> user : 1.3 list buildings and ask to choose one
+
+user -> UI : 2. Choose one building and sends building data
+
+UI -> MasterDataDevices : 2.1 PUT/PATCH building
+
+MasterDataDevices -> MasterDataDevices : 2.2 validation
+
+MasterDataDevices --> UI : 2.3 building(JSON)
+
+UI --> user : 2.4 building edited
+
+deactivate UI
+@enduml

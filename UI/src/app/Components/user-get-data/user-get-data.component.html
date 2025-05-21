@@ -1,0 +1,28 @@
+<form [formGroup]="firstFormGroup">
+    <ng-template matStepLabel>Your information</ng-template>
+    <mat-form-field>
+        <mat-label>First Name</mat-label>
+        <input readonly name="firstName" value="{{user.firstName}}" matInput placeholder="First Name" formControlName="firstCtrl">
+    </mat-form-field>
+    <br>
+    <mat-form-field>
+        <mat-label>Last Name</mat-label>
+        <input readonly ="lastName" value="{{user.lastName}}" matInput placeholder="Last Name" formControlName="secondCtrl">
+    </mat-form-field>
+    <br>
+    <mat-form-field>
+        <mat-label>Email</mat-label>
+        <input readonly ="email" value="{{user.email}}" matInput placeholder="Email" formControlName="thirdCtrl">
+    </mat-form-field>
+    <br>
+    <mat-form-field>
+        <mat-label>Phone Number</mat-label>
+        <input readonly ="phoneNumber" value="{{user.phoneNumber}}" matInput type="number" placeholder="Phone NUmber" formControlName="forthCtrl">
+    </mat-form-field>
+    <br>
+    <mat-form-field>
+        <mat-label>NIF</mat-label>
+        <input readonly ="nif" value="{{user.nif}}" matInput type="number" placeholder="NIF" formControlName="fifthCtrl">
+    </mat-form-field>
+    <br>
+</form>

@@ -1,0 +1,30 @@
+/* Custom CSS for a Material-style table */
+.material-table {
+  width: 45%;
+  border-collapse: collapse;
+  margin-bottom: 16px; /* Optional: Add margin at the bottom for spacing */
+}
+
+.material-table th, .material-table td {
+  border: 1px solid #ddd; /* Add borders to cells */
+  padding: 8px; /* Add padding to cells */
+  text-align: left; /* Align text to the left */
+}
+
+.material-table th {
+  background-color: #fff; /* Header background color */
+}
+
+.material-table tr:nth-child(even) {
+  background-color: #fff; /* Alternate row background color */
+}
+
+.material-table tr:hover {
+  background-color: #fff; /* Hover background color */
+}
+
+.material-table input {
+  border: 0;
+  width: 150%;
+  margin: 0;
+}

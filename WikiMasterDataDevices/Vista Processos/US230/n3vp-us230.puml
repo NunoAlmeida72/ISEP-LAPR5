@@ -1,0 +1,195 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+participant FloorRoute  as route
+participant  FloorController as controller
+participant  FloorService as service
+participant  Floor as domain
+participant  FloorMap as mapper
+participant  FloorRepo as repo
+
+participant  BuildingConnection as BCdomain
+participant  BuildingConnectionMap as BCmapper
+participant  BuildingConnectionRepo as BCrepo
+
+participant  Building as Bdomain
+participant  BuildingMap as Bmapper
+participant  BuildingRepo as Brepo
+
+participant  Room as Rdomain
+participant  RoomMap as Rmapper
+participant  RoomRepo as Rrepo
+
+participant  Elevator as Edomain
+participant  ElevatorMap as Emapper
+participant  ElevatorRepo as Erepo
+
+
+
+
+-> route: Patch /floors/load-maps  (json)
+activate route
+  route->controller: loadMap(json)
+  activate controller
+    controller ->service:loadMap(json.id as string,json.map as number[][],json.rooms as IRoomDTO[],json.elevator as IElevatorDTO,json.buildingConnections as IBuildingConnectionDTO[])
+    activate service
+    service->repo:findByDomainId(floorId)
+    activate repo
+    repo -> :findOne(floorId)
+    repo -> mapper:Map2Model(floorData)
+    activate mapper
+    mapper --> repo:floor
+    deactivate
+    repo --> service:floor
+    deactivate
+
+    service -> Brepo:findByDomainId(floor.buildingId)
+    activate Brepo
+    Brepo -> :findOne(floor.buildingId)
+    Brepo -> Bmapper:Map2Model(buildingData)
+    activate Bmapper
+    Bmapper --> Brepo:building
+    deactivate
+    Brepo --> service:building
+    deactivate
+
+    loop foreach roomDTO  of IRoomDTO[] 
+    service -> Rrepo:findByDomainId(roomDTO.id)
+    activate Rrepo
+    Rrepo -> :findOne(roomDTO.id)
+    Rrepo -> Rmapper:Map2Model(roomData)
+    activate Rmapper
+    Rmapper --> Rrepo:room
+    deactivate
+    Rrepo --> service:room
+    deactivate
+    service -> Rdomain**:setPosX(roomDTO.posX)
+    activate Rdomain
+    Rdomain --> service :room
+    service -> Rdomain:setPosY(roomDTO.posY)
+    Rdomain --> service :room
+    service -> Rdomain:setWidth(roomDTO.width)
+    Rdomain --> service :room
+    service -> Rdomain:setHeight(roomDTO.height)
+    Rdomain --> service :room
+    deactivate
+    service->service:rooms.push(room)
+    end
+
+    loop foreach buildingConnectionDTO of IBuildingConnectionDTO[]
+    service -> BCrepo:findByDomainId(buildingConnectionDTO.id)
+    activate BCrepo
+    BCrepo -> :findOne(buildingConnectionDTO.id)
+    BCrepo -> BCmapper:Map2Model(buildingConnectionData)
+    activate BCmapper
+    BCmapper --> BCrepo:buildingConnection
+    deactivate
+    BCrepo --> service:buildingConnection
+    deactivate
+    service -> BCdomain**:setPosX(buildingConnectionDTO.posX)
+    activate BCdomain
+    BCdomain --> service :buildingConnection
+    service -> BCdomain:setPosY(buildingConnectionDTO.posY)
+    BCdomain --> service :buildingConnection
+    deactivate
+    service->service:buildingConnections.push(buildingConnection)
+    end
+
+    alt  elevator != null
+
+    service -> Erepo:findByDomainId(elevatorDTO.id)
+    activate Erepo
+    Erepo -> :findOne(elevatorDTO.id)
+    Erepo -> Emapper:Map2Model(elevatorData)
+    activate Emapper
+    Emapper --> Erepo:elevator
+    deactivate
+    Erepo --> service:elevator
+    deactivate
+
+    service -> Edomain**:setPosX(elevatorDTO.posX)
+    activate Edomain
+    Edomain --> service :elevator
+    service -> Edomain:setPosY(elevatorDTO.posY)
+    Edomain --> service :elevator
+    deactivate
+    service -> Erepo:save(elevator)
+    activate Erepo
+    Erepo  ->  Emapper:Map2Data(elevator)
+    activate  Emapper
+    Emapper--> Erepo:elevatorData
+    deactivate
+    Erepo ->:save(elevatorData)
+    Erepo -> Emapper: Map2Model(elevatorSaved)
+    activate Emapper
+    Emapper -->  Erepo:savedElevator
+    deactivate
+    Erepo --> service:savedElevator
+    deactivate
+    end
+
+    loop foreach room of rooms
+    service -> Rrepo:save(room)
+    activate Rrepo
+    Rrepo->Rmapper:Map2Data(room)
+    activate Rmapper
+    Rmapper --> Rrepo: roomData
+    deactivate
+    Rrepo->:save(roomData)
+    Rrepo->Rmapper:Map2Model(roomSaved)
+    activate Rmapper
+    Rmapper --> Rrepo: savedRoom
+    deactivate
+    Rrepo  --> service:savedRoom
+    deactivate
+    end
+
+    loop foreach buildingConnection  of buildingConnections
+    service -> BCrepo:save(buildingConnection)
+    activate BCrepo
+    BCrepo->BCmapper:Map2Data(buildingConnection)
+    activate BCmapper
+    BCmapper --> BCrepo: buildingConnectionData
+    deactivate
+    BCrepo->:save(buildingConnectionData)
+    BCrepo->BCmapper:Map2Model(buildingConnectionSaved)
+    activate BCmapper
+    BCmapper --> BCrepo: savedBuildingConnection
+    deactivate
+    BCrepo  --> service:savedBuildingConnection
+    deactivate
+    end
+
+    service ->domain**:setMap(map)
+    activate domain
+    domain-->service:floor
+    deactivate
+
+    service -> repo:save(floor)
+    activate repo
+    repo->mapper:Map2Data(floor)
+    activate mapper
+    mapper --> repo: floorData
+    deactivate
+    repo->:save(floorData)
+    repo->mapper:Map2Model(floorSaved)
+    activate mapper
+    mapper --> repo: savedFloor
+    deactivate
+    repo  --> service:savedFloor
+    deactivate
+    service -> mapper:Map2DTO(savedFloor)
+    activate mapper
+    mapper--> service:savedFloorDTO
+    deactivate
+    service--> controller:savedFloorDTO
+    deactivate
+    controller --> route:response(savedFloorDTO as json)
+    deactivate
+    <-- route:response
+    deactivate
+@enduml

@@ -1,0 +1,74 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant Admin as AD
+participant UI as UI
+participant UserRoute as UR
+participant UserController as UC
+participant UserService as US
+participant UserRepo as URe
+participant UserMap as UM
+
+
+activate AD
+ AD -> UI: accept-refuser-user-registration
+  activate UI
+   UI -> UR: GET /auth/get/waiting/decision/users
+   activate UR
+    UR -> UC: getUsersRequest()
+    activate UC
+     UC -> US: getUsersRequests()
+     activate US
+      US -> URe: findByStatus(Status.WAITING)
+      activate URe
+       URe -> : find(query)
+       loop (for each User)
+        URe -> UM: Map2Model(userData)
+        activate UM
+         UM --> URe: UserDTO
+        deactivate UM
+       end loop
+       URe --> US: UsersDTO
+       deactivate URe
+      US --> UC: UsersDTO
+      deactivate US
+     UC --> UR: Users(json)
+     deactivate UC
+    UR --> UI: Users(json)
+   deactivate UR
+   UI -> UR: PATCH /users/{decision}-registration/:id
+   activate UR
+    UR -> UC: {decision}User
+    activate UC
+     UC -> US: {decision}User(userId, decisionUserId)
+     activate US
+      US -> URe: findById(userId)
+      activate URe
+       URe -> : findOne(query)
+       URe -> UM: Map2Model(UserData)
+       activate UM
+        UM --> URe: UserDTO
+       deactivate UM
+       URe --> US: UserDTO
+      deactivate URe
+      US -> URe: save(UserDTO)
+      activate URe
+       URe -> UM: Map2Model(UserData)
+       activate UM
+        UM --> URe: User
+       deactivate UM
+       URe -> : save(User)
+       URe --> US: User
+       deactivate URe
+      US --> UC: UserDTO
+      deactivate US
+     UC --> UR: User(json)
+     deactivate UC
+   UR --> UI: User(json)
+   deactivate UR
+  UI --> AD: User approved/rejected
+  deactivate UI
+@enduml

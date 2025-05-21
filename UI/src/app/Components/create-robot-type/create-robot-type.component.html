@@ -1,0 +1,41 @@
+<mat-horizontal-stepper [linear]="isLinear" #stepper>
+    <mat-step [stepControl]="firstFormGroup">
+      <form [formGroup]="firstFormGroup">
+        <ng-template matStepLabel>Select at least one task</ng-template>
+        <mat-form-field>
+          <mat-select  name="taskId" [formControl]="firstCtrl" formControlName="firstCtrl" multiple>
+            <mat-option *ngFor="let task of tasks" [value]="task.id">{{task.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="secondFormGroup">
+      <form [formGroup]="secondFormGroup">
+        <ng-template matStepLabel>Fill out robot type details</ng-template>
+        <mat-form-field>
+          <input name="type" type="type" matInput placeholder="Type" formControlName="secondCtrl" required>
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+          <input name="brand" type="brand" matInput placeholder="Brand" formControlName="thirdCtrl" required>
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+            <input name="model" type="model" matInput placeholder="Model" formControlName="fourthCtrl" required>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Create</ng-template>
+      <div>
+        <button mat-button (click)="createRobotType();stepper.reset()">Create</button>
+      </div>
+    </mat-step>
+</mat-horizontal-stepper>

@@ -1,0 +1,28 @@
+<mat-horizontal-stepper [linear]="isLinear" #stepper>
+  <mat-step [stepControl]="firstFormGroup">
+  <form [formGroup]="firstFormGroup" >
+    <ng-template matStepLabel>Select one building</ng-template>
+    <mat-form-field>
+      <mat-select name="buildingId" formControlName="firstCtrl">
+        <mat-option *ngFor="let building of buildings" [value]="building.id">{{building.code}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div>
+      <button mat-button matStepperNext (click)="getFloors()">Next</button>
+    </div>
+  </form>
+  </mat-step>
+  <mat-step>
+    <mat-divider></mat-divider>
+      <ng-template matStepLabel>Floors List</ng-template>
+      <mat-list role="list" *ngIf="(floors!=undefined); else noFloors">
+        <mat-list-item *ngFor="let floor of floors">{{floor.number}} {{floor.description}}</mat-list-item>
+      </mat-list>
+      <mat-divider></mat-divider>
+      <div>
+        <br>
+        <button mat-button (click)="stepper.reset();reset();">List floors for other building</button>
+      </div>
+    </mat-step>
+    <ng-template #noFloors><br><mat-spinner [diameter]="30"></mat-spinner><br></ng-template>
+  </mat-horizontal-stepper>

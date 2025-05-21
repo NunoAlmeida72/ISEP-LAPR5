@@ -1,0 +1,13 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant MDD as route
+
+-> route: GET /floors/withConnections/:id
+activate route
+  <-- route: 200 OK
+  deactivate
+@enduml

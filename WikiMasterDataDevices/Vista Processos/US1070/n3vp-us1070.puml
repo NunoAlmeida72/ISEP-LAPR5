@@ -1,0 +1,157 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+actor Campus_Manager as user
+participant UI 
+participant BuildingRoute as route
+participant BuildingController as controller
+participant BuildingService as service
+participant Building as domain
+participant BuildingMap as map
+participant BuildingRepository as repository
+
+
+user -> UI : 1. Edit Building
+activate UI
+
+UI -> route : 1.1 GET buildings
+activate route
+
+route -> controller : 1.2 listbuildings()
+
+activate controller
+
+controller -> service : 1.3 listbuildings()
+activate service
+
+service -> repository : 1.4 findAll()
+
+activate repository
+
+repository -> : 1.5 find()
+
+loop for each building
+activate map
+
+repository -> map : 1.6 map2Model(building)
+
+map --> repository : 1.6.1 buildingModel
+
+deactivate map
+
+end loop
+repository --> service : 1.7 buildingModel
+
+deactivate repository
+
+loop for each building
+
+service -> map : 1.8 model2DTO(buildingModel)
+
+activate map
+
+map --> service : 1.8.1 BuildingDTO
+
+deactivate map
+
+end loop
+
+service --> controller : 1.9 List<BuildingDTO>
+
+deactivate service
+
+controller --> route : 1.10 response
+
+deactivate controller
+
+route --> UI :  1.11 buildings(JSON)
+deactivate route
+
+UI --> user : 1.12 List buildings and ask to choose one
+
+user -> UI : 2. Choose one building and sends building data
+
+UI -> route : 2.1 PUT/PATCH building
+
+activate route
+
+route -> controller : 2.2 updateBuilding(JSON)
+
+activate controller
+
+controller -> service : 2.3 updateBuilding(JSON as IbuildingDTO)
+
+activate service
+
+service -> repository : 2.4 findByDomainId(buildingDTO.Id)
+
+activate repository
+
+repository -> : 2.5 findOne(query)
+
+repository -> map : 2.6 map2Model(building)
+
+activate map
+
+map --> repository : 2.6.1 SavedBuilding
+
+deactivate map
+
+repository --> service : 2.7 SavedBuilding
+
+deactivate repository
+
+service -> domain** : 2.8 SetAttributes(buildingDTO)
+
+domain --> service : 2.8.1 changedBuilding
+
+service -> repository : 2.9 save(changedBuilding)
+
+activate repository
+
+repository -> map : 2.10 model2Data(changedBuilding)
+
+activate map
+
+map --> repository : 2.10.1 buildingData
+
+deactivate map
+
+repository -> : 2.11 save(buildingData)
+
+repository -> map : 2.12 data2Model(buildingData)
+
+activate map
+
+map --> repository : 2.12.1 savedBuilding
+
+deactivate map
+
+repository --> service : 2.13 savedBuilding
+
+deactivate repository
+
+service -> map : 2.14 model2DTO(savedBuilding)
+
+activate map
+
+map --> service : 2.14.1 BuildingsavedDTO
+
+deactivate map
+
+service --> controller : 2.15 BuildingsavedDTO
+
+deactivate service
+
+controller --> route : 2.16 response(BuildingsavedDTO as JSON)
+
+route --> UI :  building(JSON)
+
+UI --> user :  building edited
+
+deactivate UI
+@enduml

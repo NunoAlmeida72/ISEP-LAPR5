@@ -1,0 +1,45 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+actor Fleet_Manager as user
+participant UI as ui
+participant RobotRoute  as route
+participant RobotController as controller
+participant RobotService as service
+participant Robot as domain
+participant RobotRepo as repo
+participant RobotMap as mapper
+
+activate user
+user -> ui : List robots
+activate ui
+
+ui -> route: GET robots
+activate route
+route->controller: listRobots()
+  activate controller
+    controller -> service: listRobots()
+    activate service
+    service->repo:findAll()
+    activate repo
+    repo-> :find()
+    loop foreach robot
+      repo -> mapper: Map2Model(data)
+      activate mapper
+      mapper --> repo: robot
+     deactivate mapper
+    end
+    repo --> service: list
+    deactivate repo
+    service --> controller: list
+    deactivate service
+    controller --> route: response(list as json)
+    deactivate controller
+    route --> ui: response
+    deactivate route
+    ui --> user: list robots
+    deactivate
+@enduml

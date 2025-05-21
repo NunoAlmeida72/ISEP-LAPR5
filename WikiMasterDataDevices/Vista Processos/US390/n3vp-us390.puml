@@ -1,0 +1,50 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant RobotRoute as route
+participant RobotController as controller
+participant RobotService as service
+participant RobotTypeRepo as repoRobotType
+participant RobotTypeMap as mapRobotType
+participant RobotRepo as repoRobot
+participant RobotMap as mapRobot
+
+-> route: GET /robots/:TaskOrDesignation (json)
+activate route
+ route -> controller: listRobotsByTaskOrDesignation(TaskOrDesignation)
+ activate controller
+  controller -> service: listRobotsByTaskOrDesignation(TaskOrDesignation)
+  activate service
+   service -> repoRobotType: findAll()
+   activate repoRobotType
+   repoRobotType -> : find()
+   loop (for each RobotType)
+    repoRobotType -> mapRobotType: Map2Model(robottypeData)
+    activate mapRobotType
+     mapRobotType --> repoRobotType: robottype
+     deactivate
+   end loop
+    repoRobotType --> service: robottype
+    deactivate
+   service -> repoRobot: findAll()
+   activate repoRobot
+   repoRobot -> : find()
+   loop (for each Robot)
+    repoRobot -> mapRobot: Map2Model(robotData)
+    activate mapRobot
+     mapRobot --> repoRobot: robot
+     deactivate
+    end loop
+    repoRobot --> service: robot
+    deactivate
+    service -> service: FillList
+    service --> controller: RobotsDTOList
+    deactivate
+   controller --> route: response(RobotsDTOlist as json)
+   deactivate
+  <-- route: response
+  deactivate
+@enduml

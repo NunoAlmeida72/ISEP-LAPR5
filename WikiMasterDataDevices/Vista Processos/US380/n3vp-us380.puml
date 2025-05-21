@@ -1,0 +1,85 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+participant RobotRoute  as route
+participant RobotController as controller
+participant "mapper2:Json2DTO" as jsonMapper
+participant "IRobotDTO1:IRobotDTO" as dto1
+participant "IRobotDTO1.1:IRobotDTO" as dto2
+participant "IRobotService1:IRobotService" as service
+participant "Robot1:Robot" as domain
+participant "RobotRepo1:IRobotRepo" as repository
+participant "mapper2:Domain2Data" as mapper1
+participant "Robot1:RobotData" as data
+participant "dbDriver1:IDBDriver" as db
+participant "Robot1saved:Robot" as savedDomain
+participant "Robotsaved1:RobotData" as savedData
+
+
+
+-> route: Get /Robot / (json)
+activate route
+  route->controller: getRobot(json)
+  activate controller
+    controller ->service:listRobots()
+    activate service
+    service->repository:findAll()
+    activate repository
+    repository -> db:find()
+    activate db
+    loop foreach savedRobot
+      db -> savedData**:create(savedRobot)
+    end
+    db --> repository:savedRobots
+    deactivate
+    loop foreach savedRobot
+    repository->mapper1:map2Model(savedRobot)
+    activate mapper1
+    mapper1 -> savedDomain**
+    savedDomain --> mapper1:RobotSaved
+    mapper1 --> repository:RobotSaved
+    end
+    repository --> service:RobotSaved
+    deactivate
+    deactivate
+    loop foreach savedRobot                     
+    service -> jsonMapper: map2dto(RobotSaved)
+    activate jsonMapper
+    jsonMapper -> savedDomain: getCode()
+    activate savedDomain
+    savedDomain --> jsonMapper:code
+    jsonMapper -> savedDomain: getName()
+    savedDomain --> jsonMapper:ame
+    jsonMapper -> savedDomain: getNumber()
+    savedDomain --> jsonMapper:number
+    jsonMapper -> savedDomain: getStatus()
+    savedDomain --> jsonMapper:status
+    jsonMapper -> savedDomain: getDescription()
+    savedDomain --> jsonMapper:description
+    deactivate
+    jsonMapper --> dto2**:create(code,name,number,status,description, ...)
+    dto2 --> jsonMapper:savedRobotDTO            
+    jsonMapper --> service: savedRobotDTO
+    end
+    deactivate
+    service --> controller:savedRobotDTO
+    deactivate
+    controller -> jsonMapper:map2Json(savedsRobotDTO):json
+    activate jsonMapper
+    jsonMapper --> controller:json
+    deactivate
+    controller->controller:generateRes(json)
+    controller--> route:response
+    deactivate
+    <- route:response
+    deactivate
+
+
+
+
+
+@enduml

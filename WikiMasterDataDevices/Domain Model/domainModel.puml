@@ -1,0 +1,99 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+hide methods
+hide circles
+
+
+frame BUILDINGS{
+  class Building{
+    code
+    name
+    description
+    width
+    depth
+  }
+
+  class BuildingId
+
+  Building "1" --> "1" BuildingId
+}
+
+frame  BUILDINGSCONNECTIONS{
+  class  BuildingConnection{
+    posX
+    posY
+  }
+}
+
+frame ELEVATORS{
+  class Elevator{
+    code
+    brand
+    model
+    serialNumber  
+    posX
+    posY
+  }
+}
+
+frame FLOORS{
+  class Floor{
+    number
+    description
+    map
+  }
+
+  class FloorId
+
+  Floor "1" --> "1" FloorId
+}
+
+frame ROOMS{
+  class Room{
+    code
+    category
+    description
+    posX
+    posY
+    width
+    depth
+  }
+
+  class RoomId
+
+  Room "1" --> "1" RoomId
+}
+
+frame ROBOTS{
+  class RobotType{
+    type
+    brand
+    model
+    possibleTasks
+  }
+
+  class Robot{
+    status
+    serialNumber
+    code
+    name
+    description
+  }
+}
+
+
+Robot "*" ---> "1" RobotType
+
+BuildingConnection "*" ---> "*" Floor
+
+Building "1" <--- "1" Elevator
+
+Elevator"1" ---> "*" Floor
+Building "1" <--- "*" Floor
+Floor "1" <--- "*" Room
+
+
+
+
+@enduml

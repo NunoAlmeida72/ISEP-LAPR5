@@ -1,0 +1,60 @@
+<mat-horizontal-stepper [linear]="isLinear" #stepper>
+    <mat-step [stepControl]="firstFormGroup">
+        <form [formGroup]="firstFormGroup">
+          <ng-template matStepLabel>Select a Robot and Algorithm</ng-template>
+          <mat-form-field>
+            <mat-select name="RobotName" formControlName="firstCtrl">
+              <mat-option *ngFor="let robot of robots" [value]="robot.id">{{robot.name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <br>
+          <mat-form-field>
+            <mat-select  name="Algorithm" formControlName="secondCtrl">
+              <mat-option value="Genetic">Genetic</mat-option>
+              <mat-option value="BruteForce">BruteForce</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <div>
+            <button mat-button matStepperNext (click)="getTaskRequests()">Next</button>
+          </div>
+        </form>
+    </mat-step>
+    <mat-step>
+        <mat-divider></mat-divider>
+        <ng-template matStepLabel>Check Tasks</ng-template>
+        <table matTable *ngIf="(taskRequests!=undefined); else noTasks">
+            <tr>
+              <th mat-header>status</th>
+              <th mat-header>starting Point</th>
+              <th mat-header>ending Point</th>
+              <th mat-header>assigned to</th>
+            </tr>
+              <tr *ngFor="let taskRequest of taskRequests">
+              <td>{{taskRequest.status}}</td>
+              <td>{{taskRequest.startingPoint}}</td>
+              <td>{{taskRequest.endingPoint}}</td>
+              <td>{{taskRequest.assignedTo}}</td>
+            </tr>
+          </table>
+          <mat-divider></mat-divider>
+          <div>
+            <br>
+            <button mat-button (click)="stepper.reset();reset();">Choose different robot</button>
+          </div>
+          <div>
+            <button mat-button matStepperNext (click)="getSequence()">Next</button>
+          </div>
+    </mat-step>
+    <mat-step>
+      <div *ngIf="path.sequence==''">
+        There are no tasks for this robot.
+      </div>
+      <div *ngIf="path.sequence!=''">Sequence : {{path.sequence}}<br>Cost : {{path.cost}}
+      </div>
+      <div>
+        <button mat-button matStepperNext (click)="getSequence()">Next</button>
+      </div>
+  </mat-step>
+  <ng-template #noTasks><br><mat-spinner [diameter]="30"></mat-spinner><br></ng-template>
+</mat-horizontal-stepper>
+

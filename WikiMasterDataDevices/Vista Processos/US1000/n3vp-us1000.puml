@@ -1,0 +1,84 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+actor Fleet_Manager as user
+participant UI as ui
+participant TaskRoute  as taskRoute
+participant TaskController as taskController
+participant TaskService as taskService
+participant TaskRepo as taskRepo
+participant TaskMap as taskMapper
+participant RobotTypeRoute  as route
+participant RobotTypeController as controller
+participant RobotTypeService as service
+participant RobotType as domain
+participant RobotTypeRepo as repo
+participant RobotTypeMap as mapper
+
+activate user
+user -> ui : Create RobotType
+activate ui
+
+ui -> taskRoute: GET tasks
+activate taskRoute
+taskRoute->taskController: listTasks()
+  activate taskController
+    taskController -> taskService: listTasks()
+    activate taskService
+    taskService->taskRepo:findAll()
+    activate taskRepo
+    taskRepo-> :find()
+    loop foreach task
+      taskRepo -> taskMapper: Map2Model(data)
+      activate taskMapper
+      taskMapper --> taskRepo: task
+     deactivate taskMapper
+    end
+    taskRepo --> taskService: list
+    deactivate taskRepo
+    taskService --> taskController: list
+    deactivate taskService
+    taskController --> taskRoute: response(list as json)
+    deactivate taskController
+    taskRoute --> ui: response
+    deactivate taskRoute
+    ui --> user: list tasks and ask
+user -> ui: choose tasks
+ui -> route: Post robotType (json))
+activate route
+  route -> controller: createRobotType(json)
+  activate controller
+    controller -> service: createRobotType(json as robotTypeDTO)
+    activate service
+    service -> domain**: create(robotTypeDTO)
+    domain --> service: robotType
+    service -> repo: save(robotType)
+    activate repo
+    repo -> mapper:Map2Data(robotType)
+    activate mapper
+    mapper --> repo: robotTypeData
+    deactivate
+    repo -> : save(robotTypeData)
+    repo -> mapper: Map2Model(savedRobotType)
+    activate mapper
+    mapper --> repo: savedRobotType
+    deactivate
+    repo --> service: savedRobotType
+    deactivate
+    service -> mapper: Map2DTO(savedRobotType)
+    activate mapper
+    mapper--> service: savedRobotTypeDTO
+    deactivate
+    service --> controller: savedRobotTypeDTO
+    deactivate
+    controller --> route: response(savedRobotTypeDTO as json)
+    deactivate
+    route --> ui : response
+    deactivate
+    ui --> user: robotType created
+    deactivate
+    
+@enduml

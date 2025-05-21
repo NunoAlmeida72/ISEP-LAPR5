@@ -1,0 +1,45 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant Admin as AD
+participant UI as UI
+participant UserRoute as UR
+participant UserController as UC
+participant UserService as US
+participant UserRepo as URe
+participant UserMap as UM
+
+
+activate AD
+ AD -> UI: Check user own data
+  activate UI
+   UI -> UR: GET /me
+   activate UR
+    UR -> UC: getMe()
+    activate UC
+     UC -> US: getUserById(id)
+     activate US
+      US -> URe: findByDomainId(Id)
+      activate URe
+       URe -> : find(query)
+       loop (for each User)
+        URe -> UM: Map2Model(userData)
+        activate UM
+         UM --> URe: UserDTO
+        deactivate UM
+       end loop
+       URe --> US: UserDTO
+       deactivate URe
+      US --> UC: UserDTO
+      deactivate US
+     UC --> UR: User(json)
+     deactivate UC
+    UR --> UI: User(json)
+   deactivate UR
+  UI --> AD: User Data
+  deactivate UI
+   
+@enduml

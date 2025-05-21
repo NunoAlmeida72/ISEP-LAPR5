@@ -1,0 +1,76 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+actor Campus_Manager as user
+participant UI 
+participant BuildingRoute as route
+participant BuildingController as controller
+participant BuildingService as service
+participant Building as domain
+participant BuildingMap as map
+participant BuildingRepository as repository
+
+user -> UI : 1. List Buildings
+activate UI
+
+UI -> route : 1.1 GET buildings
+activate route
+
+route -> controller : 1.2 listbuildings()
+
+activate controller
+
+controller -> service : 1.3 listbuildings()
+activate service
+
+service -> repository : 1.4 findAll()
+
+activate repository
+
+repository -> : 1.5 find()
+
+loop for each building
+activate map
+
+repository -> map : 1.6 map2Model(building)
+
+map --> repository : 1.6.1 buildingModel
+
+deactivate map
+
+end loop
+repository --> service : 1.7 buildingModel
+
+deactivate repository
+
+loop for each building
+
+service -> map : 1.8 model2DTO(buildingModel)
+
+activate map
+
+map --> service : 1.8.1 BuildingDTO
+
+deactivate map
+
+end loop
+
+service --> controller : 1.9 List<BuildingDTO>
+
+deactivate service
+
+controller --> route : 1.10 response
+
+deactivate controller
+
+route --> UI :  1.11 buildings(JSON)
+deactivate route
+
+UI --> user : 1.12 List of Buildings
+
+deactivate UI
+@enduml

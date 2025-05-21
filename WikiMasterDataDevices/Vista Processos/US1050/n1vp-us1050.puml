@@ -1,0 +1,14 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+participant System as route
+
+-> route: Post /Building / (json)
+activate route
+  <-- route: 200 OK
+  deactivate
+
+@enduml

@@ -1,0 +1,20 @@
+<mat-horizontal-stepper [linear]="isLinear" #stepper>
+  <mat-step [stepControl]="firstFormGroup">
+    <form [formGroup]="firstFormGroup">
+      <ng-template matStepLabel>Fill out the task information</ng-template>
+      <mat-form-field>
+          <input name="name" matInput placeholder="Name" formControlName="firstCtrl" required>
+      </mat-form-field>
+      <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+      <ng-template matStepLabel>Create</ng-template>
+      <div>
+        <button mat-button (click)="createTask();stepper.reset()">Create</button>
+      </div>
+    </mat-step>
+</mat-horizontal-stepper>

@@ -1,0 +1,77 @@
+<mat-horizontal-stepper [linear]="isLinear" #stepper>
+    <mat-step [stepControl]="firstFormGroup">
+        <form [formGroup]="firstFormGroup">
+            <ng-template matStepLabel>Select Task</ng-template>
+            <mat-form-field>
+                <mat-select name="taskId" formControlName="firstCtrl">
+                    <mat-option *ngFor="let task of tasks" [value]="task.id">{{task.name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div>
+                <button mat-button matStepperNext (click)="taskRequestOption()">Next</button>
+            </div>
+        </form>
+    </mat-step>
+    <mat-step *ngIf="surveillance" [stepControl]="secondFormGroup">
+        <form [formGroup]="secondFormGroup">
+            <ng-template matStepLabel>Select Building</ng-template>
+            <mat-form-field>
+                <mat-select name="building" formControlName="buildingId">
+                    <mat-option *ngFor="let building of buildings" [value]="building.id">{{building.code}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div>
+                <button mat-button matStepperNext (click)="getFloors()">Next</button>
+            </div>
+        </form>
+    </mat-step>
+    <mat-step *ngIf="surveillance" [stepControl]="thirdFormGroup">
+        <form [formGroup]="thirdFormGroup">
+            <ng-template matStepLabel>Select Floor</ng-template>
+            <mat-form-field>
+                <mat-select name="floor" formControlName="floorId">
+                    <mat-option *ngFor="let floor of floors" [value]="floor.id">{{floor.number}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div>
+                <button mat-button matStepperNext>Next</button>
+            </div>
+        </form>
+    </mat-step>
+    <mat-step *ngIf="!surveillance" [stepControl]="fourthFormGroup">
+        <form [formGroup]="fourthFormGroup">
+            <ng-template matStepLabel>Select Starting Point and Ending Point</ng-template>
+            <mat-form-field>
+                <mat-select name="room" formControlName="room1">
+                    <mat-option *ngFor="let room of rooms" [value]="room.id">{{room.name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <mat-select name="room" formControlName="room2" >
+                    <mat-option *ngFor="let room of rooms" [value]="room.id">{{room.name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div>
+                <button mat-button matStepperNext>Next</button>
+            </div>
+        </form>
+    </mat-step>
+    <mat-step [stepControl]="fifthFormGroup">
+        <form [formGroup]="fifthFormGroup">
+            <ng-template matStepLabel>Fill Task Request Info</ng-template>
+            <mat-form-field>
+                <input name="name" type="text" matInput placeholder="Name" formControlName="name" required>
+            </mat-form-field>
+            <div>
+                <button mat-button matStepperNext>Next</button>
+            </div>
+        </form>
+    </mat-step>
+    <mat-step>
+        <ng-template matStepLabel>Create</ng-template>
+        <div>
+            <button mat-button (click)="createTaskRequest();stepper.reset()">Create</button>
+        </div>
+    </mat-step>
+</mat-horizontal-stepper>

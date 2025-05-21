@@ -1,0 +1,31 @@
+<div class="container">
+    <form [formGroup]="firstFormGroup" (ngSubmit)="openPrivacyPolicy()">
+        <ng-template matStepLabel>Fill in your information</ng-template>
+        <mat-form-field>
+            <input name="firstName" matInput placeholder="First Name" formControlName="firstCtrl" required>
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+            <input name="lastName" matInput placeholder="Last Name" formControlName="secondCtrl" required>
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+            <input name="email" matInput type="email" placeholder="Email" formControlName="thirdCtrl" required>
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+            <input name="phoneNumber" matInput type="number" placeholder="Phone NUmber" formControlName="fourthCtrl" required>
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+            <input name="nif" matInput type="number" placeholder="NIF" formControlName="fifthCtrl" required>
+        </mat-form-field>
+        <br>
+        <mat-form-field>
+            <input name="password" matInput type="password" placeholder="Password" formControlName="sixthCtrl" required>
+        </mat-form-field>
+        <div>
+            <button mat-button type="submit" [disabled]="!firstFormGroup.valid">Register</button>
+        </div>
+    </form>
+</div>

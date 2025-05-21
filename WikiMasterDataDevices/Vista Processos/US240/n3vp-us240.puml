@@ -1,0 +1,84 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+participant BuildingConnectionRoute  as route
+participant BuildingConnectionController as controller
+participant BuildingConnectionService as service
+participant BuildingConnection as domain
+participant BuildingConnectionRepo as repo
+participant BuildingConnectionMap as mapper
+participant FloorRepo as repoFloor
+participant FloorMap as mapperFloor
+
+
+
+-> route: Post /buildingConnections / (json)
+activate route
+  route->controller: createBuildingConnection(json)
+  activate controller
+    controller ->service:createBuildingConnection(json as IBuildingConnectionDTO)
+    activate service
+    service->repoFloor:findByDomainId(buildingConnectionDTO.floor1Id)
+    activate repoFloor
+    repoFloor -> :findOne(buildingConnectionDTO.floor1Id)
+    repoFloor -> mapperFloor:Map2Model(floor1Data)
+    activate mapperFloor
+    mapperFloor --> repoFloor:floor1
+    deactivate
+    repoFloor  --> service:floor1
+    deactivate
+    service->repoFloor:findByDomainId(buildingConnectionDTO.floor2Id)
+    activate repoFloor
+    repoFloor -> :findOne(buildingConnectionDTO.floor2Id)
+    repoFloor -> mapperFloor:Map2Model(floor2Data)
+    activate mapperFloor
+    mapperFloor --> repoFloor:floor2
+    deactivate
+    repoFloor  --> service:floor2
+    deactivate
+    service -> repo:findAll()
+    activate repo
+    repo ->:find()
+    loop foreach buildingConnectionData
+    repo -> mapper:Map2Model(buildingConnectionData)
+    activate mapper
+    mapper --> repo:buildingConnection
+    deactivate
+    end
+    repo --> service : buildingConnections
+    deactivate
+    service -> domain**:create(buildingConnectionDTO)
+    domain --> service:buildingConnection
+    service -> repo:save(buildingConnection)
+    activate  repo
+    repo -> mapper:Map2Data(buildingConnection)
+    activate mapper
+    mapper --> repo:buildingConnectionData
+    deactivate
+    repo -> : save(buildingConnectionData)
+    repo -> mapper:Map2Model(buildingConnectionData)     
+    activate mapper
+    mapper --> repo:buildingConnection1
+    deactivate
+    repo --> service: buildingConnection1
+    deactivate
+    service -> mapper:Map2DTO(buildingConnection1)
+    activate mapper
+    mapper--> service:buildingConnection1DTO
+    deactivate
+    service --> controller:buildingConnection1DTO
+    deactivate
+    controller --> route:response(buildingConnectionDTO as json)
+    deactivate
+    <-- route:response
+    deactivate
+
+
+
+
+
+@enduml

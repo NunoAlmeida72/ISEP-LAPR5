@@ -1,0 +1,50 @@
+<mat-horizontal-stepper [linear]="isLinear" #stepper>
+    <mat-step [stepControl]="firstFormGroup">
+        <form [formGroup]="firstFormGroup">
+          <ng-template matStepLabel>Select one task or designation</ng-template>
+          <mat-form-field>
+            <mat-select name="taskId" formControlName="firstCtrl">
+              <mat-option value="None">None</mat-option>
+              <mat-option *ngFor="let task of tasks" [value]="task.id">{{task.name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <br>
+          <mat-form-field>
+            <mat-select  name="name" formControlName="secondCtrl">
+              <mat-option value="None">None</mat-option>
+              <mat-option *ngFor="let name of names" [value]="name">{{name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <div>
+            <button mat-button matStepperNext (click)="getRobots()">Next</button>
+          </div>
+        </form>
+    </mat-step>
+    <mat-step>
+        <mat-divider></mat-divider>
+        <ng-template matStepLabel>Robots List</ng-template>
+        <table matTable *ngIf="(robots!=undefined); else noRobots">
+            <tr>
+              <th mat-header>code</th>
+              <th mat-header>name</th>
+              <th mat-header>number</th>
+              <th mat-header>status</th>
+              <th mat-header>description</th>
+            </tr>
+              <tr *ngFor="let robot of robots">
+              <td>{{robot.code}}</td>
+              <td>{{robot.name}}</td>
+              <td>{{robot.number}}</td>
+              <td>{{robot.status}}</td>
+              <td>{{robot.description}}</td>
+            </tr>
+          </table>
+          <mat-divider></mat-divider>
+          <div>
+            <br>
+            <button mat-button (click)="stepper.reset();reset();">List other Robots</button>
+          </div>
+    </mat-step>
+    <ng-template #noRobots><br><mat-spinner [diameter]="30"></mat-spinner><br></ng-template>
+</mat-horizontal-stepper>
+

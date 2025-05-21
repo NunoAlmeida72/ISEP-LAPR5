@@ -1,0 +1,68 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+actor Campus_Manager as user
+participant UI 
+participant BuildingRoute as route
+participant BuildingController as controller
+participant BuildingService as service
+participant Building as domain
+participant BuildingMap as map
+participant BuildingRepository as repository
+
+
+user -> UI : 1. Create Building
+activate UI
+
+UI -> route : 1.1 POST buildings
+activate route
+
+route -> controller : 1.2 createBuilding(JSON)
+activate controller
+
+controller -> service : 1.3 createBuilding(JSON as IBuildingDTO)
+
+activate service
+
+service -> domain** : 1.4 create(BuildingDTO)
+
+domain --> service : 1.5 building
+
+service -> repository : 1.6 save(building)
+
+repository -> map : 1.6.1 map2Data(building)
+
+map --> repository : 1.6.2 building data
+
+repository -> : 1.6.3 building data
+
+repository -> map: 1.6.4 map2Model(savebuilding)
+
+map --> repository : 1.6.5 buildingSaved
+
+repository --> service 
+
+service -> map : 1.7 map2DTO(buildingSaved)
+
+map --> service : 1.7.1 buildingSavedDTO
+
+service --> controller : 1.8 buildingSavedDTO
+
+deactivate service
+
+controller --> route : 1.9 buildingSavedDTO
+
+deactivate controller
+
+
+route --> UI : 1.10 building(JSON)
+deactivate route
+
+UI --> user : 1.11 Building Created
+
+deactivate UI
+@enduml

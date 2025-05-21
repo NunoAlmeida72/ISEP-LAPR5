@@ -1,0 +1,22 @@
+<mat-horizontal-stepper [linear]="isLinear" #stepper>
+    <mat-step [stepControl]="firstFormGroup">
+      <form [formGroup]="firstFormGroup">
+        <ng-template matStepLabel>Select a robot to disable</ng-template>
+        <mat-form-field>
+          <mat-select name="robotId" formControlName="firstCtrl">
+            <mat-option *ngFor="let robot of robots" [value]="robot">{{robot.code}} {{robot.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Disable</ng-template>
+      <div>
+        <button mat-button (click)="disableRobot();stepper.reset()">Disable</button>
+      </div>
+    </mat-step>
+</mat-horizontal-stepper>
+  

@@ -1,0 +1,62 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+participant FloorRoute  as route
+participant FloorController as controller
+participant FloorService as service
+participant Floor as domain
+participant FloorMap as mapper
+participant FloorRepo as repo
+participant Floor as floor
+
+-> route: Put/Patch /floors
+activate route
+  route -> controller: updateFloor(json)
+  activate controller
+    controller -> service: updateFloor(json as floorDTO)
+    activate service
+    service -> repo: findByDomainId(floorDTO.id)
+    activate repo
+    repo -> mapper: Map2Model(savedFloor)
+    activate mapper
+    mapper --> repo: savedFloor
+    deactivate
+    repo --> service: savedFloor
+    deactivate
+    service -> floor: setAttributes(floorDTO)
+    activate floor
+    floor --> service: updatedFloor
+    deactivate
+    service -> repo: save(updatedFloor)
+    activate repo
+
+    repo -> mapper: map2data(updatedFloor)
+    activate mapper
+    mapper --> repo: updatedFloorData
+    deactivate
+
+    repo -> mapper: map2Model(floor)
+    activate mapper
+    mapper --> repo: floor
+    deactivate
+    repo --> service: floor
+    deactivate
+    service -> mapper: map2DTO(floor)
+    activate mapper
+    mapper --> service: floorDTO
+
+    deactivate
+    service --> controller: floorDTO
+
+    deactivate
+
+    controller --> route: response(floorDTO as json)
+    deactivate
+    <-- route: response
+    deactivate
+    
+@enduml

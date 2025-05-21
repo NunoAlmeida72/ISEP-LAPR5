@@ -1,0 +1,58 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+
+participant RoomRoute  as route
+participant RoomController as controller
+participant RoomService as service
+participant Room as domain
+participant RoomRepo as repo
+participant RoomMap as mapper
+participant FloorRepo as repoFloor
+participant FloorMap as mapperFloor
+
+-> route: Post /rooms / (json)
+activate route
+  route -> controller: createRoom(json)
+  activate controller
+    controller -> service: createRoom(json as IRoomDTO)
+    activate service
+    service -> repoFloor: findByDomainId(roomDTO.floorId)
+    activate repoFloor
+    repoFloor -> : findOne(roomDTO.floorId)
+    repoFloor -> mapperFloor: Map2Model(floorData)
+    activate mapperFloor
+    mapperFloor --> repoFloor: floor
+    deactivate
+    repoFloor --> service: floor
+    deactivate
+    service -> domain**: create(roomDTO)
+    domain --> service: room
+    service -> repo: save(room)
+    activate repo
+    repo -> mapper:Map2Data(buildingConnection)
+    activate mapper
+    mapper --> repo: roomData
+    deactivate
+    repo -> : save(roomData)
+    repo -> mapper: Map2Model(roomData)     
+    activate mapper
+    mapper --> repo: room1
+    deactivate
+    repo --> service: room1
+    deactivate
+    service -> mapper: Map2DTO(room1)
+    activate mapper
+    mapper--> service: room1DTO
+    deactivate
+    service --> controller: room1DTO
+    deactivate
+    controller --> route: response(roomDTO as json)
+    deactivate
+    <-- route: response
+    deactivate
+    
+@enduml

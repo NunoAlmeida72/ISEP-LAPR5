@@ -1,0 +1,28 @@
+@startuml
+'http://plantuml.com/skinparam.html
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam shadowing false
+
+actor User as user
+participant UI
+participant MasterDataDevices
+activate user
+user -> UI : 1: List robots with task or designation
+activate UI
+
+UI -> MasterDataDevices : 1.1: GET tasks
+activate MasterDataDevices
+MasterDataDevices --> UI : 1.2: tasks(JSON)
+deactivate MasterDataDevices
+UI --> user : 1.3: lists tasks and asks to choose
+user -> UI : 2: choose tasks
+UI -> MasterDataDevices : 2.1: GET robots
+activate MasterDataDevices
+MasterDataDevices --> UI : 2.2: rbots(JSON)
+deactivate MasterDataDevices
+
+UI --> user : 2.3: lists robots
+deactivate UI
+deactivate user
+@enduml

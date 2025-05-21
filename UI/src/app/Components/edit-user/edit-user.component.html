@@ -1,0 +1,25 @@
+<form [formGroup]="firstFormGroup">
+    <ng-template matStepLabel>Edit your information</ng-template>
+    <mat-form-field>
+        <input name="firstName" value="{{user.firstName}}" matInput placeholder="First Name" formControlName="firstCtrl">
+    </mat-form-field>
+    <br>
+    <mat-form-field>
+        <input name="lastName" value="{{user.lastName}}" matInput placeholder="Last Name" formControlName="secondCtrl">
+    </mat-form-field>
+    <br>
+    <mat-form-field>
+        <input name="phoneNumber" value="{{user.phoneNumber}}" matInput type="number" placeholder="Phone NUmber" formControlName="thirdCtrl">
+    </mat-form-field>
+    <br>
+    <mat-form-field *ngIf="userOrNot">
+        <input name="nif" value="{{user.nif}}" matInput type="number" placeholder="NIF" formControlName="fourthCtrl">
+    </mat-form-field>
+    <br>
+    <mat-form-field>
+        <input name="password" matInput type="password" placeholder="Password" formControlName="fifthCtrl">
+    </mat-form-field>
+    <div>
+        <button mat-button (click)="editUser()">Edit</button>
+    </div>
+</form>
